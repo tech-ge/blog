@@ -3,7 +3,7 @@
  *
  * POST /api/engagement?action=view     — record a view (public, no auth needed)
  * POST /api/engagement?action=like     — toggle like   (auth required)
- * POST /api/engagement?action=love     — toggle love   (auth required)
+ * POST /api/engaGement?action=love     — toggle love   (auth required)
  * POST /api/engagement?action=comment  — add comment   (auth required)
  * GET  /api/engagement?postId=xxx      — get engagement for a post
  */
