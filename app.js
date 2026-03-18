@@ -1,33 +1,32 @@
 /* =====================================================
-   app.js  —  TechGeo Blog — Application Logic
-   content.js must be loaded before this file (provides allPosts)
+   app.js  —  TechGeo Blog Application Logic
+   content.js must load before this file (provides allPosts)
 ===================================================== */
 
 /* ═══════════════════════════════════════════════════
-   SECTION METADATA
+   SECTION METADATA  (no emojis — clean labels)
 ═══════════════════════════════════════════════════ */
 const sectionMeta = {
-    sports:    { label: ' Sports',    public: true  },
-    health:    { label: ' Health',    public: true  },
-    finance:   { label: ' Finance',   public: true  },
-    politics:  { label: ' Politics',  public: true  },
-    religion:  { label: ' Religion',  public: true  },
-    economics: { label: ' Economics', public: true  },
-    news:      { label: ' News',      public: true  },
-    updates:   { label: ' Updates',   public: true  },
-    articles:  { label: ' Articles',  public: true },
-    education: { label: ' Education', public: false },
-    love:      { label: ' Love',      public: false },
-    stories:   { label: ' Stories',   public: false },
-    memes:     { label: ' Memes',     public: false },
-    quotes:    { label: ' Quotes',    public: false },
-    darkside:  { label: ' Dark Side', public: false },
-    crime:     { label: ' Crime',     public: false },
+    sports:    { label: 'Sports',    public: true  },
+    health:    { label: 'Health',    public: true  },
+    finance:   { label: 'Finance',   public: true  },
+    politics:  { label: 'Politics',  public: true  },
+    religion:  { label: 'Religion',  public: true  },
+    economics: { label: 'Economics', public: true  },
+    news:      { label: 'News',      public: true  },
+    updates:   { label: 'Updates',   public: true  },
+    articles:  { label: 'Articles',  public: true  },
+    education: { label: 'Education', public: false },
+    love:      { label: 'Love',      public: false },
+    stories:   { label: 'Stories',   public: false },
+    memes:     { label: 'Memes',     public: false },
+    quotes:    { label: 'Quotes',    public: false },
+    darkside:  { label: 'Dark Side', public: false },
+    crime:     { label: 'Crime',     public: false },
 };
 
 /* ═══════════════════════════════════════════════════
-   AUTH  —  STATE & HELPERS
-   All login/register calls go to /api/auth (MongoDB)
+   AUTH  —  STATE  (all calls go to /api/auth MongoDB)
 ═══════════════════════════════════════════════════ */
 const API_BASE = '/api';
 
@@ -55,96 +54,74 @@ function loadSession() {
 
 async function attemptLogin(email, password) {
     const res  = await fetch(API_BASE + '/auth?action=login', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, password })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login failed');
-    saveSession(
-        { id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' },
-        data.token
-    );
+    saveSession({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' }, data.token);
     authForm.style.display = 'none';
     updateNavForLoggedInUser();
-    showToast('✅ Welcome back, ' + data.user.name.split(' ')[0] + '!', 'success');
+    showToast('Welcome back, ' + data.user.name.split(' ')[0] + '!', 'success');
 }
 
 async function attemptRegister(name, email, phone, password) {
-    if (!name || !email || !password) {
-        showToast('⚠️ Please fill in all required fields.', 'error');
-        return;
-    }
+    if (!name || !email || !password) { showToast('Please fill in all required fields.', 'error'); return; }
     const res  = await fetch(API_BASE + '/auth?action=register', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name, email, phone, password })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Registration failed');
-    saveSession(
-        { id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' },
-        data.token
-    );
+    saveSession({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' }, data.token);
     authForm.style.display = 'none';
     updateNavForLoggedInUser();
-    showToast('🎉 Account created! Welcome, ' + data.user.name.split(' ')[0] + '!', 'success');
+    showToast('Account created! Welcome, ' + data.user.name.split(' ')[0] + '!', 'success');
 }
 
 function logout() {
-    currentUser  = null;
-    currentToken = null;
+    currentUser = null; currentToken = null;
     sessionStorage.removeItem('techgeo_user');
     sessionStorage.removeItem('techgeo_token');
     updateNavForGuest();
-    showToast('👋 You have been logged out.', 'info');
+    showToast('You have been logged out.', 'info');
 }
 
 function updateNavForLoggedInUser() {
     const dashLink = currentUser.role === 'admin'
-        ? ' <a href="admin.html" class="admin-dash-link" title="Admin Dashboard">⚙️</a>' : '';
+        ? ' <a href="admin.html" class="admin-dash-link" title="Admin Dashboard">&#9881;</a>' : '';
     loginLink.innerHTML =
         currentUser.avatar + ' ' + currentUser.name.split(' ')[0] +
-        dashLink +
-        ' <span class="logout-btn" id="logout-btn">· Logout</span>';
+        dashLink + ' <span class="logout-btn" id="logout-btn">Logout</span>';
     document.getElementById('logout-btn').addEventListener('click', e => {
         e.stopPropagation(); e.preventDefault(); logout();
     });
-    document.querySelectorAll('.hidden-link').forEach(l => {
-        l.style.opacity = '1'; l.title = 'Click to open';
-    });
+    document.querySelectorAll('.hidden-link').forEach(l => { l.style.opacity = '1'; l.title = 'Click to open'; });
 }
 
 function updateNavForGuest() {
-    loginLink.innerHTML = 'Login';
-    document.querySelectorAll('.hidden-link').forEach(l => {
-        l.style.opacity = '0.7'; l.title = 'Login required';
-    });
+    loginLink.innerHTML = '👤 Login';
+    document.querySelectorAll('.hidden-link').forEach(l => { l.style.opacity = '0.7'; l.title = 'Login required'; });
 }
 
-/* ── Toast notification ── */
+/* ── Utilities ── */
 function escHtml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function showToast(message, type = 'info') {
+function showToast(message, type) {
+    type = type || 'info';
     const existing = document.getElementById('toast-msg');
     if (existing) existing.remove();
     const toast = document.createElement('div');
     toast.id = 'toast-msg';
     toast.textContent = message;
     const bg = type === 'success' ? '#1a3b0a' : type === 'error' ? '#7a0000' : '#333';
-    toast.style.cssText =
-        'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
-        'background:' + bg + ';color:#fff;padding:12px 24px;border-radius:50px;' +
-        'font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25);animation:toastIn .3s ease;';
+    toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:' + bg +
+        ';color:#fff;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;' +
+        'box-shadow:0 4px 20px rgba(0,0,0,.25);animation:toastIn .3s ease;';
     document.body.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0'; toast.style.transition = 'opacity .4s';
-        setTimeout(() => toast.remove(), 400);
-    }, 3000);
+    setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .4s'; setTimeout(() => toast.remove(), 400); }, 3000);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -163,8 +140,7 @@ loginLink.addEventListener('click', e => {
 });
 
 document.addEventListener('click', e => {
-    if (!authForm.contains(e.target) && e.target !== loginLink)
-        authForm.style.display = 'none';
+    if (!authForm.contains(e.target) && e.target !== loginLink) authForm.style.display = 'none';
 });
 
 function showLogin()    { loginForm.style.display = 'block';  registerForm.style.display = 'none'; }
@@ -177,50 +153,42 @@ document.getElementById('register-tab-2').addEventListener('click', showRegister
 document.getElementById('to-register').addEventListener('click', e => { e.preventDefault(); showRegister(); });
 document.getElementById('to-login').addEventListener('click',    e => { e.preventDefault(); showLogin(); });
 
-/* ── Login form submit ── */
 document.querySelector('#login-form form').addEventListener('submit', async e => {
     e.preventDefault();
-    const email    = document.getElementById('login-email').value.trim();
+    const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
-    const btn      = document.querySelector('#login-form .auth-submit');
-    if (!email || !password) { showToast('⚠️ Please enter your email and password.', 'error'); return; }
+    const btn = document.querySelector('#login-form .auth-submit');
+    if (!email || !password) { showToast('Please enter your email and password.', 'error'); return; }
     btn.textContent = 'Checking...'; btn.disabled = true;
-    try {
-        await attemptLogin(email, password);
-    } catch (err) {
-        showToast('❌ ' + err.message, 'error');
-        document.getElementById('login-password').value = '';
-    }
+    try { await attemptLogin(email, password); }
+    catch (err) { showToast(err.message, 'error'); document.getElementById('login-password').value = ''; }
     btn.textContent = 'Login'; btn.disabled = false;
 });
 
-/* ── Register form submit ── */
 document.querySelector('#register-form form').addEventListener('submit', async e => {
     e.preventDefault();
     const name     = document.querySelector('#register-form input[type="text"]').value.trim();
     const email    = document.querySelector('#register-form input[type="email"]').value.trim();
     const phone    = document.querySelector('#register-form input[type="tel"]').value.trim();
     const password = document.querySelector('#register-form input[type="password"]').value;
-    const btn      = document.querySelector('#register-form .auth-submit');
+    const btn = document.querySelector('#register-form .auth-submit');
     btn.textContent = 'Creating...'; btn.disabled = true;
-    try {
-        await attemptRegister(name, email, phone, password);
-    } catch (err) {
-        showToast('❌ ' + err.message, 'error');
-    }
+    try { await attemptRegister(name, email, phone, password); }
+    catch (err) { showToast(err.message, 'error'); }
     btn.textContent = 'Create Account'; btn.disabled = false;
 });
 
 /* ═══════════════════════════════════════════════════
-   ENGAGEMENT  —  ALL DATA SAVED IN MONGODB
-   api/engagement.js handles views, likes, loves, comments
+   ENGAGEMENT  —  MongoDB via /api/engagement
 ═══════════════════════════════════════════════════ */
-
-/* In-memory cache so we don't refetch on every render */
 const engCache = {};
 
 function authHeader() {
     return currentToken ? { 'Authorization': 'Bearer ' + currentToken } : {};
+}
+
+function getCachedEngagement(postId) {
+    return engCache[postId] || { views:0, likes:0, loves:0, comments:[], userLiked:false, userLoved:false, commentCount:0 };
 }
 
 async function fetchEngagement(postId) {
@@ -231,22 +199,14 @@ async function fetchEngagement(postId) {
         const data = await res.json();
         engCache[postId] = data;
         return data;
-    } catch {
-        /* fallback empty state if API unreachable */
-        return engCache[postId] || { views: 0, likes: 0, loves: 0, comments: [], userLiked: false, userLoved: false, commentCount: 0 };
-    }
-}
-
-function getCachedEngagement(postId) {
-    return engCache[postId] || { views: 0, likes: 0, loves: 0, comments: [], userLiked: false, userLoved: false, commentCount: 0 };
+    } catch { return getCachedEngagement(postId); }
 }
 
 async function recordView(postId) {
     try {
         const res  = await fetch(API_BASE + '/engagement?action=view', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ postId })
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId })
         });
         const data = await res.json();
         if (engCache[postId]) engCache[postId].views = data.views;
@@ -258,10 +218,9 @@ async function recordView(postId) {
 async function toggleReaction(postId, type) {
     if (!isLoggedIn()) { openLoginPrompt(); return null; }
     try {
-        const res  = await fetch(API_BASE + '/engagement?action=' + (type === 'likes' ? 'like' : 'love'), {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json', ...authHeader() },
-            body:    JSON.stringify({ postId })
+        const res = await fetch(API_BASE + '/engagement?action=' + (type === 'likes' ? 'like' : 'love'), {
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body: JSON.stringify({ postId })
         });
         if (res.status === 401) { openLoginPrompt(); return null; }
         const data = await res.json();
@@ -274,10 +233,9 @@ async function addComment(postId, text) {
     if (!isLoggedIn()) { openLoginPrompt(); return null; }
     if (!text.trim()) return null;
     try {
-        const res  = await fetch(API_BASE + '/engagement?action=comment', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json', ...authHeader() },
-            body:    JSON.stringify({ postId, text: text.trim() })
+        const res = await fetch(API_BASE + '/engagement?action=comment', {
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body: JSON.stringify({ postId, text: text.trim() })
         });
         if (res.status === 401) { openLoginPrompt(); return null; }
         const data = await res.json();
@@ -287,35 +245,28 @@ async function addComment(postId, text) {
 }
 
 /* ═══════════════════════════════════════════════════
-   CARD  —  HELPERS
+   CARD  —  BUILD
 ═══════════════════════════════════════════════════ */
 function getLabel(section) {
     return (sectionMeta[section] && sectionMeta[section].label) ? sectionMeta[section].label : section;
 }
 
 function buildEngagementBar(post) {
-    const eng   = getCachedEngagement(post.id);
-    const liked = eng.userLiked;
-    const loved = eng.userLoved;
-    const loginHint = isLoggedIn() ? '' : 'Login to ';
+    const eng = getCachedEngagement(post.id);
     return (
         '<div class="eng-bar" data-post="' + post.id + '">' +
-            '<span class="eng-views">👁 <span class="eng-views-count">' + eng.views + '</span> views</span>' +
-            '<button class="eng-btn like-btn' + (liked ? ' reacted' : '') + '" title="' + loginHint + 'Like">' +
-                '👍 <span class="like-count">' + eng.likes + '</span></button>' +
-            '<button class="eng-btn love-btn' + (loved ? ' reacted' : '') + '" title="' + loginHint + 'Love">' +
-                '❤️ <span class="love-count">' + eng.loves + '</span></button>' +
-            '<button class="eng-btn comment-trigger">💬 <span class="comment-count">' + eng.commentCount + '</span></button>' +
-            '<button class="eng-btn share-btn"> Share</button>' +
+            '<span class="eng-views">Views: <span class="eng-views-count">' + eng.views + '</span></span>' +
+            '<button class="eng-btn like-btn' + (eng.userLiked ? ' reacted' : '') + '">Like <span class="like-count">' + eng.likes + '</span></button>' +
+            '<button class="eng-btn love-btn' + (eng.userLoved ? ' reacted' : '') + '">Love <span class="love-count">' + eng.loves + '</span></button>' +
+            '<button class="eng-btn comment-trigger">Comments <span class="comment-count">' + eng.commentCount + '</span></button>' +
+            '<button class="eng-btn share-btn">Share</button>' +
         '</div>'
     );
 }
 
 const CARD_FOOTER =
     '<div class="card-footer">' +
-        '<span class="card-footer-brand">' +
-            '<span class="green">Tech</span><span class="red">Geo</span> &mdash; East Africa\'s Tech Blog' +
-        '</span>' +
+        '<span class="card-footer-brand"><span class="green">Tech</span><span class="red">Geo</span> &mdash; East Africa\'s Tech Blog</span>' +
         '<div class="card-footer-socials">' +
             '<a href="https://www.facebook.com/profile.php?id=61551668602567" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>' +
             '<a href="https://instagram.com/techg254" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>' +
@@ -325,47 +276,50 @@ const CARD_FOOTER =
         '</div>' +
     '</div>';
 
-/* ═══════════════════════════════════════════════════
-   CARD  —  BUILD
-═══════════════════════════════════════════════════ */
 function buildCard(post) {
-    const mediaHTML = post.mediaType === 'video'
-        ? '<iframe src="' + post.media + '" frameborder="0" allowfullscreen></iframe>'
-        : post.mediaType === 'image'
-        ? '<img src="' + post.media + '" alt="' + post.caption + '">'
+    /* Only render media if there is actual media */
+    const hasMedia  = post.mediaType && post.mediaType !== 'none' && post.media && post.media.trim() !== '';
+    const mediaHTML = post.mediaType === 'video' && hasMedia
+        ? '<iframe src="' + escHtml(post.media) + '" frameborder="0" allowfullscreen></iframe>'
+        : post.mediaType === 'image' && hasMedia
+        ? '<img src="' + escHtml(post.media) + '" alt="' + escHtml(post.caption || '') + '">'
         : '';
 
-    const preview   = post.content.length > 140 ? post.content.slice(0, 140) + '…' : post.content;
-    const dateBadge = post.date ? '<span class="post-date"> ' + post.date + '</span>' : '';
+    const preview   = post.content.length > 140 ? post.content.slice(0, 140) + '...' : post.content;
+    const dateBadge = post.date ? '<span class="post-date">' + escHtml(post.date) + '</span>' : '';
+    const leftClass = hasMedia ? 'post-left' : 'post-left post-left-full';
+    const rightCol  = hasMedia
+        ? '<div class="post-right">' +
+              '<div class="post-media">' + mediaHTML + '</div>' +
+              '<p class="post-caption">' + escHtml(post.caption || '') + '</p>' +
+          '</div>'
+        : '';
 
     const card = document.createElement('article');
     card.className        = 'post-card';
     card.id               = post.id;
     card.dataset.section  = post.section;
-    card.dataset.category = post.category;
+    card.dataset.category = post.category || post.section;
 
     card.innerHTML =
         '<div class="post-card-header">' +
             '<div class="post-card-meta">' +
-                '<span class="post-category-badge">' + getLabel(post.section) + '</span>' +
+                '<span class="post-category-badge">' + escHtml(getLabel(post.section)) + '</span>' +
                 dateBadge +
             '</div>' +
-            '<h2 class="post-title">' + post.title + '</h2>' +
+            '<h2 class="post-title">' + escHtml(post.title) + '</h2>' +
         '</div>' +
         '<div class="post-card-body">' +
-            '<div class="post-left">' +
-                '<p class="post-content">' + preview + '</p>' +
-                '<button class="read-more-btn">Read More &rarr;</button>' +
+            '<div class="' + leftClass + '">' +
+                '<p class="post-content">' + escHtml(preview) + '</p>' +
+                '<button class="read-more-btn">Read More</button>' +
             '</div>' +
-            '<div class="post-right">' +
-                '<div class="post-media">' + mediaHTML + '</div>' +
-                '<p class="post-caption">' + post.caption + '</p>' +
-            '</div>' +
+            rightCol +
         '</div>' +
         buildEngagementBar(post) +
         CARD_FOOTER;
 
-    /* ── Wire events ── */
+    /* Events */
     card.querySelector('.read-more-btn').addEventListener('click', async () => {
         const v = await recordView(post.id);
         const vc = card.querySelector('.eng-views-count');
@@ -376,24 +330,21 @@ function buildCard(post) {
     card.querySelector('.like-btn').addEventListener('click', async e => {
         const eng = await toggleReaction(post.id, 'likes');
         if (!eng) return;
-        const btn = e.currentTarget;
-        btn.classList.toggle('reacted', eng.userLiked);
-        btn.querySelector('.like-count').textContent = eng.likes;
+        e.currentTarget.classList.toggle('reacted', eng.userLiked);
+        e.currentTarget.querySelector('.like-count').textContent = eng.likes;
         syncModalEngagement(post.id);
     });
 
     card.querySelector('.love-btn').addEventListener('click', async e => {
         const eng = await toggleReaction(post.id, 'loves');
         if (!eng) return;
-        const btn = e.currentTarget;
-        btn.classList.toggle('reacted', eng.userLoved);
-        btn.querySelector('.love-count').textContent = eng.loves;
+        e.currentTarget.classList.toggle('reacted', eng.userLoved);
+        e.currentTarget.querySelector('.love-count').textContent = eng.loves;
         syncModalEngagement(post.id);
     });
 
     card.querySelector('.share-btn').addEventListener('click', e => {
-        e.stopPropagation();
-        openShareModal(post);
+        e.stopPropagation(); openShareModal(post);
     });
 
     card.querySelector('.comment-trigger').addEventListener('click', async () => {
@@ -403,15 +354,12 @@ function buildCard(post) {
         openReadMore(post, true);
     });
 
-    /* fetch & render real engagement from DB after card is built */
+    /* Fetch real engagement from DB after card renders */
     fetchEngagement(post.id).then(eng => updateCardEngagement(card, eng));
 
     return card;
 }
 
-/* ═══════════════════════════════════════════════════
-   CARD  —  UPDATE ENGAGEMENT COUNTS AFTER DB FETCH
-═══════════════════════════════════════════════════ */
 function updateCardEngagement(card, eng) {
     if (!card || !eng) return;
     const vc = card.querySelector('.eng-views-count');  if (vc) vc.textContent = eng.views;
@@ -434,7 +382,6 @@ async function syncModalEngagement(postId) {
     const lb = get('rm-like-btn');      if (lb) lb.classList.toggle('reacted', eng.userLiked);
     const vb = get('rm-love-btn');      if (vb) vb.classList.toggle('reacted', eng.userLoved);
     renderModalComments(eng.comments || []);
-    /* also sync the card on the feed */
     const card = document.getElementById(postId);
     if (card) updateCardEngagement(card, eng);
 }
@@ -443,14 +390,13 @@ function renderModalComments(comments) {
     const list = document.getElementById('rm-comments-list');
     if (!list) return;
     if (!comments || comments.length === 0) {
-        list.innerHTML = '<p class="no-comments">No comments yet. Be the first!</p>';
-        return;
+        list.innerHTML = '<p class="no-comments">No comments yet. Be the first!</p>'; return;
     }
     list.innerHTML = comments.map(c =>
         '<div class="comment-item">' +
             '<div class="comment-meta">' +
                 '<span class="comment-author">' + escHtml(c.name) + '</span>' +
-                '<span class="comment-time">' + c.time + '</span>' +
+                '<span class="comment-time">' + escHtml(c.time) + '</span>' +
             '</div>' +
             '<p class="comment-text">' + escHtml(c.text) + '</p>' +
         '</div>'
@@ -460,25 +406,25 @@ function renderModalComments(comments) {
 /* ═══════════════════════════════════════════════════
    MODAL  —  OPEN READ MORE
 ═══════════════════════════════════════════════════ */
-async function openReadMore(post, scrollToComments = false) {
-    const mediaHTML = post.mediaType === 'video'
-        ? '<div class="rm-media"><iframe src="' + post.media + '" frameborder="0" allowfullscreen></iframe></div>'
-        : post.mediaType === 'image'
-        ? '<div class="rm-media"><img src="' + post.media + '" alt="' + post.caption + '"></div>'
+async function openReadMore(post, scrollToComments) {
+    const hasMedia  = post.mediaType && post.mediaType !== 'none' && post.media && post.media.trim() !== '';
+    const mediaHTML = post.mediaType === 'video' && hasMedia
+        ? '<div class="rm-media"><iframe src="' + escHtml(post.media) + '" frameborder="0" allowfullscreen></iframe></div>'
+        : post.mediaType === 'image' && hasMedia
+        ? '<div class="rm-media"><img src="' + escHtml(post.media) + '" alt="' + escHtml(post.caption || '') + '"></div>'
         : '';
 
-    const modal = document.getElementById('read-more-modal');
+    const modal  = document.getElementById('read-more-modal');
+    const cached = getCachedEngagement(post.id);
 
     document.getElementById('rm-badge').textContent    = getLabel(post.section);
     document.getElementById('rm-title').textContent    = post.title;
     const rmDate = document.getElementById('rm-date');
-    if (rmDate) rmDate.textContent = post.date ? '' + post.date : '';
+    if (rmDate) rmDate.textContent = post.date ? post.date : '';
     document.getElementById('rm-media-wrap').innerHTML = mediaHTML;
-    document.getElementById('rm-caption').textContent  = post.caption;
+    document.getElementById('rm-caption').textContent  = post.caption || '';
     document.getElementById('rm-content').textContent  = post.content;
 
-    /* show cached values immediately, then update from DB */
-    const cached = getCachedEngagement(post.id);
     document.getElementById('rm-views-count').textContent   = cached.views;
     document.getElementById('rm-like-count').textContent    = cached.likes;
     document.getElementById('rm-love-count').textContent    = cached.loves;
@@ -498,7 +444,7 @@ async function openReadMore(post, scrollToComments = false) {
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    /* fetch fresh data from DB */
+    /* Refresh from DB */
     fetchEngagement(post.id).then(eng => {
         document.getElementById('rm-views-count').textContent   = eng.views;
         document.getElementById('rm-like-count').textContent    = eng.likes;
@@ -523,73 +469,53 @@ async function openReadMore(post, scrollToComments = false) {
 const readMoreModal = document.getElementById('read-more-modal');
 
 document.getElementById('close-read-more').addEventListener('click', () => {
-    readMoreModal.style.display = 'none';
-    document.body.style.overflow = '';
+    readMoreModal.style.display = 'none'; document.body.style.overflow = '';
 });
-
 readMoreModal.addEventListener('click', e => {
-    if (e.target === readMoreModal) {
-        readMoreModal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
+    if (e.target === readMoreModal) { readMoreModal.style.display = 'none'; document.body.style.overflow = ''; }
 });
 
 document.getElementById('rm-like-btn').addEventListener('click', async () => {
     const postId = readMoreModal.dataset.postId; if (!postId) return;
     const eng = await toggleReaction(postId, 'likes'); if (eng) syncModalEngagement(postId);
 });
-
 document.getElementById('rm-love-btn').addEventListener('click', async () => {
     const postId = readMoreModal.dataset.postId; if (!postId) return;
     const eng = await toggleReaction(postId, 'loves'); if (eng) syncModalEngagement(postId);
 });
-
 document.getElementById('rm-comment-submit').addEventListener('click', async () => {
     const postId = readMoreModal.dataset.postId;
     const input  = document.getElementById('rm-comment-box');
     if (!postId || !input || !input.value.trim()) return;
     const result = await addComment(postId, input.value);
-    if (result) {
-        input.value = '';
-        syncModalEngagement(postId);
-        showToast(' Comment posted!', 'success');
-    }
+    if (result) { input.value = ''; syncModalEngagement(postId); showToast('Comment posted!', 'success'); }
 });
-
 document.getElementById('rm-comment-box').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        document.getElementById('rm-comment-submit').click();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('rm-comment-submit').click(); }
 });
-
 document.getElementById('rm-share-btn').addEventListener('click', () => {
     const postId = readMoreModal.dataset.postId; if (!postId) return;
     const post = livePosts.find(p => p.id === postId);
     if (post) openShareModal(post);
 });
-
 document.getElementById('rm-comment-login-note').addEventListener('click', () => {
-    readMoreModal.style.display = 'none';
-    document.body.style.overflow = '';
-    authForm.style.display = 'block';
-    showLogin();
+    readMoreModal.style.display = 'none'; document.body.style.overflow = '';
+    authForm.style.display = 'block'; showLogin();
 });
 
 /* ═══════════════════════════════════════════════════
-   LIVE POSTS  —  merged DB posts + content.js posts
-   DB posts always come first (newest), then static
+   LIVE POSTS  —  DB posts + content.js merged
 ═══════════════════════════════════════════════════ */
-let livePosts = [...allPosts]; // start with static, replaced after DB fetch
+let livePosts = [...allPosts];
 
 async function fetchAndMergePosts() {
     try {
-        const headers = { 'Content-Type': 'application/json', ...authHeader() };
-        const res  = await fetch(API_BASE + '/posts', { headers });
-        if (!res.ok) throw new Error('API returned ' + res.status);
+        const res = await fetch(API_BASE + '/posts', {
+            headers: { 'Content-Type': 'application/json', ...authHeader() }
+        });
+        if (!res.ok) throw new Error('API ' + res.status);
         const dbPosts = await res.json();
 
-        /* Normalise DB posts to match content.js shape */
         const normalised = dbPosts.map(p => ({
             id:         'db-' + p._id,
             _mongoId:   p._id,
@@ -600,18 +526,18 @@ async function fetchAndMergePosts() {
             mediaType:  p.mediaType || 'none',
             media:      p.media     || '',
             caption:    p.caption   || '',
-            content:    p.content,
+            content:    p.content   || '',
             date:       p.date      || '',
             author:     p.author    || 'TechGeo',
         }));
 
-        /* DB posts first, then static content.js posts (deduped by title) */
-        const dbTitles = new Set(normalised.map(p => p.title.toLowerCase()));
+        /* DB posts first; static posts appended if not already in DB by title */
+        const dbTitles  = new Set(normalised.map(p => p.title.toLowerCase()));
         const staticOnly = allPosts.filter(p => !dbTitles.has(p.title.toLowerCase()));
         livePosts = [...normalised, ...staticOnly];
 
     } catch (err) {
-        console.warn('Could not fetch DB posts, using static content only:', err.message);
+        console.warn('Using static posts only:', err.message);
         livePosts = [...allPosts];
     }
 }
@@ -626,8 +552,7 @@ function renderPublicFeed(filter, searchQuery) {
     blogFeed.innerHTML = '';
     let posts = livePosts.filter(p => p.visibility === 'public');
 
-    if (filter && filter !== 'all')
-        posts = posts.filter(p => p.section === filter);
+    if (filter && filter !== 'all') posts = posts.filter(p => p.section === filter);
 
     if (searchQuery) {
         const q = searchQuery.toLowerCase();
@@ -639,17 +564,16 @@ function renderPublicFeed(filter, searchQuery) {
     }
 
     if (posts.length === 0) {
-        blogFeed.innerHTML = '<p class="no-results">No posts found. Try a different filter or search.</p>';
-        return;
+        blogFeed.innerHTML = '<p class="no-results">No posts found.</p>'; return;
     }
 
     if (!filter || filter === 'all') {
         const sections = [...new Set(posts.map(p => p.section))];
         sections.forEach(sec => {
-            const heading = document.createElement('p');
-            heading.className = 'feed-section-title';
-            heading.textContent = getLabel(sec);
-            blogFeed.appendChild(heading);
+            const h = document.createElement('p');
+            h.className = 'feed-section-title';
+            h.textContent = getLabel(sec);
+            blogFeed.appendChild(h);
             posts.filter(p => p.section === sec).forEach(p => blogFeed.appendChild(buildCard(p)));
         });
     } else {
@@ -658,37 +582,36 @@ function renderPublicFeed(filter, searchQuery) {
 }
 
 /* ═══════════════════════════════════════════════════
-   RIGHT SIDEBAR  —  LATEST TOPICS (newest first)
+   RIGHT SIDEBAR  —  LATEST TOPICS
 ═══════════════════════════════════════════════════ */
 const tocList = document.getElementById('toc-list');
 
 function buildTOC() {
     tocList.innerHTML = '';
-    const publicPosts = livePosts
+    livePosts
         .filter(p => p.visibility === 'public')
         .slice()
-        .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-    publicPosts.forEach(post => {
-        const li = document.createElement('li');
-        const a  = document.createElement('a');
-        a.href = '#';
-        a.innerHTML = '<span class="toc-cat">' + getLabel(post.section) + '</span>' + post.title;
-        a.addEventListener('click', e => {
-            e.preventDefault();
-            setFilter(post.section);
-            setTimeout(() => {
-                const target = document.getElementById(post.id);
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 80);
+        .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+        .forEach(post => {
+            const li = document.createElement('li');
+            const a  = document.createElement('a');
+            a.href = '#';
+            a.innerHTML = '<span class="toc-cat">' + escHtml(getLabel(post.section)) + '</span>' + escHtml(post.title);
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                setFilter(post.section);
+                setTimeout(() => {
+                    const t = document.getElementById(post.id);
+                    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 80);
+            });
+            li.appendChild(a);
+            tocList.appendChild(li);
         });
-        li.appendChild(a);
-        tocList.appendChild(li);
-    });
 }
 
 /* ═══════════════════════════════════════════════════
-   FILTER  —  LEFT SIDEBAR & NAVBAR
+   FILTER
 ═══════════════════════════════════════════════════ */
 function setFilter(filter) {
     currentFilter = filter;
@@ -702,7 +625,6 @@ function setFilter(filter) {
 document.querySelectorAll('.filter-link').forEach(link => {
     link.addEventListener('click', e => { e.preventDefault(); setFilter(link.dataset.filter); });
 });
-
 document.querySelectorAll('.nav-link[data-filter]').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
@@ -719,7 +641,6 @@ const searchBox = document.getElementById('search-box');
 const searchBtn = document.getElementById('search-btn');
 
 function doSearch() { renderPublicFeed(currentFilter, searchBox.value.trim()); }
-
 searchBtn.addEventListener('click', doSearch);
 searchBox.addEventListener('input',   doSearch);
 searchBox.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
@@ -745,20 +666,16 @@ function openHiddenSection(sectionKey) {
     document.body.style.overflow = 'hidden';
 }
 
-closePanel.addEventListener('click', () => {
-    hiddenOverlay.style.display = 'none'; document.body.style.overflow = '';
-});
+closePanel.addEventListener('click', () => { hiddenOverlay.style.display='none'; document.body.style.overflow=''; });
 hiddenOverlay.addEventListener('click', e => {
-    if (e.target === hiddenOverlay) { hiddenOverlay.style.display = 'none'; document.body.style.overflow = ''; }
+    if (e.target === hiddenOverlay) { hiddenOverlay.style.display='none'; document.body.style.overflow=''; }
 });
-
 document.querySelectorAll('.hidden-link').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
         isLoggedIn() ? openHiddenSection(link.dataset.hidden) : openLoginPrompt();
     });
 });
-
 document.querySelectorAll('.nav-link[data-hidden]').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
@@ -774,17 +691,14 @@ const closePrompt    = document.getElementById('close-prompt');
 const promptLoginBtn = document.getElementById('prompt-login-btn');
 
 function openLoginPrompt() { loginPrompt.style.display = 'flex'; }
-
 closePrompt.addEventListener('click', () => { loginPrompt.style.display = 'none'; });
 loginPrompt.addEventListener('click', e => { if (e.target === loginPrompt) loginPrompt.style.display = 'none'; });
 promptLoginBtn.addEventListener('click', () => {
-    loginPrompt.style.display = 'none';
-    authForm.style.display = 'block';
-    showLogin();
+    loginPrompt.style.display = 'none'; authForm.style.display = 'block'; showLogin();
 });
 
 /* ═══════════════════════════════════════════════════
-   SUBSCRIBE  —  SAVED IN MONGODB
+   SUBSCRIBE  —  MongoDB via /api/subscribers
 ═══════════════════════════════════════════════════ */
 function openSubscribeModal() {
     document.getElementById('subscribe-modal').style.display = 'flex';
@@ -792,54 +706,42 @@ function openSubscribeModal() {
 }
 
 document.getElementById('subscribe-nav-btn').addEventListener('click', openSubscribeModal);
-
 document.getElementById('close-subscribe').addEventListener('click', () => {
-    document.getElementById('subscribe-modal').style.display = 'none';
-    document.body.style.overflow = '';
+    document.getElementById('subscribe-modal').style.display = 'none'; document.body.style.overflow = '';
 });
-
 document.getElementById('subscribe-modal').addEventListener('click', e => {
     if (e.target === document.getElementById('subscribe-modal')) {
-        document.getElementById('subscribe-modal').style.display = 'none';
-        document.body.style.overflow = '';
+        document.getElementById('subscribe-modal').style.display = 'none'; document.body.style.overflow = '';
     }
 });
-
 document.getElementById('subscribe-form').addEventListener('submit', async e => {
     e.preventDefault();
     const name  = document.getElementById('sub-name').value.trim();
     const email = document.getElementById('sub-email').value.trim();
     const btn   = document.getElementById('sub-btn');
-    if (!name || !email) { showToast('⚠️ Please fill in your name and email.', 'error'); return; }
+    if (!name || !email) { showToast('Please fill in your name and email.', 'error'); return; }
     btn.textContent = 'Subscribing...'; btn.disabled = true;
     try {
         const res  = await fetch(API_BASE + '/subscribers', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ name, email })
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
         });
         const data = await res.json();
-        if (res.status === 409) {
-            showToast('📧 You are already subscribed!', 'info');
-        } else if (!res.ok) {
-            throw new Error(data.error || 'Subscription failed');
-        } else {
-            showToast('🎉 Welcome, ' + name.split(' ')[0] + '! You are now subscribed.', 'success');
+        if (res.status === 409) showToast('You are already subscribed!', 'info');
+        else if (!res.ok) throw new Error(data.error || 'Subscription failed');
+        else {
+            showToast('Welcome, ' + name.split(' ')[0] + '! You are now subscribed.', 'success');
             document.getElementById('subscribe-modal').style.display = 'none';
             document.body.style.overflow = '';
             document.getElementById('sub-name').value  = '';
             document.getElementById('sub-email').value = '';
         }
-    } catch (err) {
-        showToast('❌ ' + err.message, 'error');
-    }
+    } catch (err) { showToast(err.message, 'error'); }
     btn.textContent = 'Subscribe Now'; btn.disabled = false;
 });
 
 /* ═══════════════════════════════════════════════════
    SHARE
-   Public posts  → open link, shareable by anyone
-   Private posts → link works but shows login gate
 ═══════════════════════════════════════════════════ */
 function buildShareUrl(post) {
     const base = window.location.href.split('?')[0].split('#')[0];
@@ -853,14 +755,11 @@ function openShareModal(post) {
 
     document.getElementById('share-post-title').textContent = post.title;
     document.getElementById('share-link-input').value = url;
-    document.getElementById('share-private-note').style.display =
-        post.visibility === 'members' ? 'block' : 'none';
-
+    document.getElementById('share-private-note').style.display = post.visibility === 'members' ? 'block' : 'none';
     document.getElementById('share-wa').href = 'https://wa.me/?text=' + text + '%20' + encUrl;
     document.getElementById('share-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encUrl;
     document.getElementById('share-tw').href = 'https://twitter.com/intent/tweet?text=' + text + '&url=' + encUrl;
     document.getElementById('share-tg').href = 'https://t.me/share/url?url=' + encUrl + '&text=' + text;
-
     document.getElementById('share-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
@@ -877,17 +776,12 @@ document.getElementById('copy-link-btn').addEventListener('click', () => {
     const input = document.getElementById('share-link-input');
     input.select();
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(input.value).then(() => showToast('🔗 Link copied!', 'success'));
-    } else {
-        document.execCommand('copy');
-        showToast('🔗 Link copied!', 'success');
-    }
+        navigator.clipboard.writeText(input.value).then(() => showToast('Link copied!', 'success'));
+    } else { document.execCommand('copy'); showToast('Link copied!', 'success'); }
 });
 
 /* ═══════════════════════════════════════════════════
    DEEP-LINK ROUTING
-   ?post=post-id  auto-opens the post on page load.
-   Private posts require login first.
 ═══════════════════════════════════════════════════ */
 function handleDeepLink() {
     const params = new URLSearchParams(window.location.search);
@@ -896,10 +790,7 @@ function handleDeepLink() {
     const post = livePosts.find(p => p.id === postId);
     if (!post) return;
     if (post.visibility === 'members' && !isLoggedIn()) {
-        setTimeout(() => {
-            openLoginPrompt();
-            showToast('🔒 Login to view this members-only post.', 'info');
-        }, 400);
+        setTimeout(() => { openLoginPrompt(); showToast('Login to view this members-only post.', 'info'); }, 400);
         return;
     }
     setTimeout(() => openReadMore(post), 300);
@@ -909,9 +800,6 @@ function handleDeepLink() {
    INIT
 ═══════════════════════════════════════════════════ */
 loadSession();
-
-/* Show static posts immediately so page isn't blank,
-   then fetch DB posts and re-render with full merged list */
 renderPublicFeed('all', '');
 buildTOC();
 
