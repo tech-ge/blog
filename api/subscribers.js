@@ -6,7 +6,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const { connectDB, Subscriber } = require('./_db');
+const { connectDB, Subscriber } = require('../lib/db');
 const JWT_SECRET = process.env.JWT_SECRET || 'techgeo_secret';
 
 function getUser(req) {
