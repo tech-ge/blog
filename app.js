@@ -26,92 +26,76 @@ const sectionMeta = {
 };
 
 /* ═══════════════════════════════════════════════════
-   USER DATABASE  (in-memory / temporary)
-   Add more users by copying the object pattern below.
-═══════════════════════════════════════════════════ */
-const userDB = [
-    {
-        id: 1,
-        name: 'Geoffrey Muthoka',
-        email: 'geoffreymuthoka200@gmail.com',
-        password: 'admin123',
-        role: 'admin',
-        avatar: '👤'
-    }
-    /*
-    , {
-        id: 2,
-        name: 'Jane Doe',
-        email: 'jane@example.com',
-        password: 'pass456',
-        role: 'member',
-        avatar: '👤'
-    }
-    */
-];
-
-/* ═══════════════════════════════════════════════════
    AUTH  —  STATE & HELPERS
+   All login/register calls go to /api/auth (MongoDB)
 ═══════════════════════════════════════════════════ */
-let currentUser = null;
+const API_BASE = '/api';
+
+let currentUser  = null;
+let currentToken = null;
 
 function isLoggedIn() { return currentUser !== null; }
 
-function saveSession(user) {
-    sessionStorage.setItem('techgeo_user', JSON.stringify({
-        id: user.id, name: user.name, email: user.email,
-        role: user.role, avatar: user.avatar
-    }));
+function saveSession(user, token) {
+    currentUser  = user;
+    currentToken = token;
+    sessionStorage.setItem('techgeo_user',  JSON.stringify(user));
+    sessionStorage.setItem('techgeo_token', token);
 }
 
 function loadSession() {
-    const saved = sessionStorage.getItem('techgeo_user');
-    if (saved) {
-        currentUser = JSON.parse(saved);
+    const savedUser  = sessionStorage.getItem('techgeo_user');
+    const savedToken = sessionStorage.getItem('techgeo_token');
+    if (savedUser && savedToken) {
+        currentUser  = JSON.parse(savedUser);
+        currentToken = savedToken;
         updateNavForLoggedInUser();
     }
 }
 
-function attemptLogin(email, password) {
-    const found = userDB.find(u =>
-        u.email.toLowerCase() === email.toLowerCase() && u.password === password
+async function attemptLogin(email, password) {
+    const res  = await fetch(API_BASE + '/auth?action=login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+    saveSession(
+        { id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' },
+        data.token
     );
-    if (found) {
-        currentUser = { id: found.id, name: found.name, email: found.email, role: found.role, avatar: found.avatar };
-        saveSession(currentUser);
-        authForm.style.display = 'none';
-        updateNavForLoggedInUser();
-        showToast('✅ Welcome back, ' + found.name.split(' ')[0] + '!', 'success');
-        return true;
-    }
-    return false;
-}
-
-function attemptRegister(name, email, phone, password) {
-    if (!name || !email || !password) {
-        showToast('⚠️ Please fill in all required fields.', 'error');
-        return false;
-    }
-    if (userDB.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-        showToast('⚠️ That email is already registered. Please login.', 'error');
-        return false;
-    }
-    const newUser = {
-        id: userDB.length + 1, name, email,
-        phone: phone || '', password, role: 'member', avatar: '👤'
-    };
-    userDB.push(newUser);
-    currentUser = { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role, avatar: newUser.avatar };
-    saveSession(currentUser);
     authForm.style.display = 'none';
     updateNavForLoggedInUser();
-    showToast('🎉 Account created! Welcome, ' + name.split(' ')[0] + '!', 'success');
-    return true;
+    showToast('✅ Welcome back, ' + data.user.name.split(' ')[0] + '!', 'success');
+}
+
+async function attemptRegister(name, email, phone, password) {
+    if (!name || !email || !password) {
+        showToast('⚠️ Please fill in all required fields.', 'error');
+        return;
+    }
+    const res  = await fetch(API_BASE + '/auth?action=register', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ name, email, phone, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Registration failed');
+    saveSession(
+        { id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' },
+        data.token
+    );
+    authForm.style.display = 'none';
+    updateNavForLoggedInUser();
+    showToast('🎉 Account created! Welcome, ' + data.user.name.split(' ')[0] + '!', 'success');
 }
 
 function logout() {
-    currentUser = null;
+    currentUser  = null;
+    currentToken = null;
     sessionStorage.removeItem('techgeo_user');
+    sessionStorage.removeItem('techgeo_token');
     updateNavForGuest();
     showToast('👋 You have been logged out.', 'info');
 }
@@ -188,25 +172,24 @@ document.getElementById('to-register').addEventListener('click', e => { e.preven
 document.getElementById('to-login').addEventListener('click',    e => { e.preventDefault(); showLogin(); });
 
 /* ── Login form submit ── */
-document.querySelector('#login-form form').addEventListener('submit', e => {
+document.querySelector('#login-form form').addEventListener('submit', async e => {
     e.preventDefault();
     const email    = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
     const btn      = document.querySelector('#login-form .auth-submit');
     if (!email || !password) { showToast('⚠️ Please enter your email and password.', 'error'); return; }
     btn.textContent = 'Checking...'; btn.disabled = true;
-    setTimeout(() => {
-        const ok = attemptLogin(email, password);
-        if (!ok) {
-            showToast('Incorrect email or password.', 'error');
-            document.getElementById('login-password').value = '';
-        }
-        btn.textContent = 'Login'; btn.disabled = false;
-    }, 600);
+    try {
+        await attemptLogin(email, password);
+    } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+        document.getElementById('login-password').value = '';
+    }
+    btn.textContent = 'Login'; btn.disabled = false;
 });
 
 /* ── Register form submit ── */
-document.querySelector('#register-form form').addEventListener('submit', e => {
+document.querySelector('#register-form form').addEventListener('submit', async e => {
     e.preventDefault();
     const name     = document.querySelector('#register-form input[type="text"]').value.trim();
     const email    = document.querySelector('#register-form input[type="email"]').value.trim();
@@ -214,10 +197,12 @@ document.querySelector('#register-form form').addEventListener('submit', e => {
     const password = document.querySelector('#register-form input[type="password"]').value;
     const btn      = document.querySelector('#register-form .auth-submit');
     btn.textContent = 'Creating...'; btn.disabled = true;
-    setTimeout(() => {
-        attemptRegister(name, email, phone, password);
-        btn.textContent = 'Create Account'; btn.disabled = false;
-    }, 600);
+    try {
+        await attemptRegister(name, email, phone, password);
+    } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+    }
+    btn.textContent = 'Create Account'; btn.disabled = false;
 });
 
 /* ═══════════════════════════════════════════════════
@@ -544,7 +529,7 @@ document.getElementById('rm-comment-submit').addEventListener('click', () => {
     if (comment) {
         input.value = '';
         syncModalEngagement(postId);
-        showToast(' Comment posted!', 'success');
+        showToast('💬 Comment posted!', 'success');
     }
 });
 
@@ -843,7 +828,7 @@ document.getElementById('copy-link-btn').addEventListener('click', () => {
         navigator.clipboard.writeText(input.value).then(() => showToast('🔗 Link copied!', 'success'));
     } else {
         document.execCommand('copy');
-        showToast('🔗 Link copied!', 'success');
+        showToast(' Link copied!', 'success');
     }
 });
 
