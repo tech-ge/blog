@@ -7,22 +7,22 @@
    SECTION METADATA
 ═══════════════════════════════════════════════════ */
 const sectionMeta = {
-    sports:    { label: 'Sports',    public: true  },
-    health:    { label: 'Health',    public: true  },
-    finance:   { label: 'Finance',   public: true  },
-    politics:  { label: 'Politics',  public: true  },
-    religion:  { label: 'Religion',  public: true  },
-    economics: { label: 'Economics', public: true  },
-    news:      { label: 'News',      public: true  },
-    updates:   { label: 'Updates',   public: true  },
-    articles:  { label: 'Articles',  public: true  },
-    education: { label: 'Education', public: false },
-    love:      { label: 'Love',      public: false },
-    stories:   { label: 'Stories',   public: false },
-    memes:     { label: 'Memes',     public: false },
-    quotes:    { label: 'Quotes',    public: false },
-    darkside:  { label: 'Dark Side', public: false },
-    crime:     { label: 'Crime',     public: false },
+    sports:    { label: ' Sports',    public: true  },
+    health:    { label: ' Health',    public: true  },
+    finance:   { label: ' Finance',   public: true  },
+    politics:  { label: ' Politics',  public: true  },
+    religion:  { label: ' Religion',  public: true  },
+    economics: { label: ' Economics', public: true  },
+    news:      { label: ' News',      public: true  },
+    updates:   { label: ' Updates',   public: true  },
+    articles:  { label: ' Articles',  public: true },
+    education: { label: ' Education', public: false },
+    love:      { label: ' Love',      public: false },
+    stories:   { label: ' Stories',   public: false },
+    memes:     { label: ' Memes',     public: false },
+    quotes:    { label: ' Quotes',    public: false },
+    darkside:  { label: ' Dark Side', public: false },
+    crime:     { label: ' Crime',     public: false },
 };
 
 /* ═══════════════════════════════════════════════════
@@ -116,7 +116,7 @@ function updateNavForLoggedInUser() {
 }
 
 function updateNavForGuest() {
-    loginLink.innerHTML = '👤 Login';
+    loginLink.innerHTML = 'Login';
     document.querySelectorAll('.hidden-link').forEach(l => {
         l.style.opacity = '0.7'; l.title = 'Login required';
     });
@@ -306,7 +306,7 @@ function buildEngagementBar(post) {
             '<button class="eng-btn love-btn' + (loved ? ' reacted' : '') + '" title="' + loginHint + 'Love">' +
                 '❤️ <span class="love-count">' + eng.loves + '</span></button>' +
             '<button class="eng-btn comment-trigger">💬 <span class="comment-count">' + eng.commentCount + '</span></button>' +
-            '<button class="eng-btn share-btn">Share</button>' +
+            '<button class="eng-btn share-btn"> Share</button>' +
         '</div>'
     );
 }
@@ -552,7 +552,7 @@ document.getElementById('rm-comment-submit').addEventListener('click', async () 
     if (result) {
         input.value = '';
         syncModalEngagement(postId);
-        showToast('💬 Comment posted!', 'success');
+        showToast(' Comment posted!', 'success');
     }
 });
 
@@ -565,7 +565,7 @@ document.getElementById('rm-comment-box').addEventListener('keydown', e => {
 
 document.getElementById('rm-share-btn').addEventListener('click', () => {
     const postId = readMoreModal.dataset.postId; if (!postId) return;
-    const post = allPosts.find(p => p.id === postId);
+    const post = livePosts.find(p => p.id === postId);
     if (post) openShareModal(post);
 });
 
@@ -577,6 +577,46 @@ document.getElementById('rm-comment-login-note').addEventListener('click', () =>
 });
 
 /* ═══════════════════════════════════════════════════
+   LIVE POSTS  —  merged DB posts + content.js posts
+   DB posts always come first (newest), then static
+═══════════════════════════════════════════════════ */
+let livePosts = [...allPosts]; // start with static, replaced after DB fetch
+
+async function fetchAndMergePosts() {
+    try {
+        const headers = { 'Content-Type': 'application/json', ...authHeader() };
+        const res  = await fetch(API_BASE + '/posts', { headers });
+        if (!res.ok) throw new Error('API returned ' + res.status);
+        const dbPosts = await res.json();
+
+        /* Normalise DB posts to match content.js shape */
+        const normalised = dbPosts.map(p => ({
+            id:         'db-' + p._id,
+            _mongoId:   p._id,
+            section:    p.section,
+            category:   p.section,
+            visibility: p.visibility,
+            title:      p.title,
+            mediaType:  p.mediaType || 'none',
+            media:      p.media     || '',
+            caption:    p.caption   || '',
+            content:    p.content,
+            date:       p.date      || '',
+            author:     p.author    || 'TechGeo',
+        }));
+
+        /* DB posts first, then static content.js posts (deduped by title) */
+        const dbTitles = new Set(normalised.map(p => p.title.toLowerCase()));
+        const staticOnly = allPosts.filter(p => !dbTitles.has(p.title.toLowerCase()));
+        livePosts = [...normalised, ...staticOnly];
+
+    } catch (err) {
+        console.warn('Could not fetch DB posts, using static content only:', err.message);
+        livePosts = [...allPosts];
+    }
+}
+
+/* ═══════════════════════════════════════════════════
    PUBLIC FEED
 ═══════════════════════════════════════════════════ */
 const blogFeed = document.getElementById('blog-feed');
@@ -584,7 +624,7 @@ let currentFilter = 'all';
 
 function renderPublicFeed(filter, searchQuery) {
     blogFeed.innerHTML = '';
-    let posts = allPosts.filter(p => p.visibility === 'public');
+    let posts = livePosts.filter(p => p.visibility === 'public');
 
     if (filter && filter !== 'all')
         posts = posts.filter(p => p.section === filter);
@@ -624,7 +664,7 @@ const tocList = document.getElementById('toc-list');
 
 function buildTOC() {
     tocList.innerHTML = '';
-    const publicPosts = allPosts
+    const publicPosts = livePosts
         .filter(p => p.visibility === 'public')
         .slice()
         .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
@@ -693,7 +733,7 @@ const hiddenPanelTitle = document.getElementById('hidden-panel-title');
 const closePanel       = document.getElementById('close-panel');
 
 function openHiddenSection(sectionKey) {
-    const posts = allPosts.filter(p => p.section === sectionKey);
+    const posts = livePosts.filter(p => p.section === sectionKey);
     hiddenPanelTitle.textContent = getLabel(sectionKey);
     hiddenPanelFeed.innerHTML = '';
     if (posts.length === 0) {
@@ -853,7 +893,7 @@ function handleDeepLink() {
     const params = new URLSearchParams(window.location.search);
     const postId = params.get('post');
     if (!postId) return;
-    const post = allPosts.find(p => p.id === postId);
+    const post = livePosts.find(p => p.id === postId);
     if (!post) return;
     if (post.visibility === 'members' && !isLoggedIn()) {
         setTimeout(() => {
@@ -869,6 +909,14 @@ function handleDeepLink() {
    INIT
 ═══════════════════════════════════════════════════ */
 loadSession();
+
+/* Show static posts immediately so page isn't blank,
+   then fetch DB posts and re-render with full merged list */
 renderPublicFeed('all', '');
 buildTOC();
-handleDeepLink();
+
+fetchAndMergePosts().then(() => {
+    renderPublicFeed(currentFilter, document.getElementById('search-box').value.trim());
+    buildTOC();
+    handleDeepLink();
+});
