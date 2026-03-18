@@ -44,9 +44,23 @@ module.exports = async (req, res) => {
         const action = req.query.action;
         const postId = req.query.postId || (req.body && req.body.postId);
 
-        /* ── GET engagement for a post ── */
+        /* ── GET engagement — single or BULK ── */
         if (req.method === 'GET') {
-            if (!postId) return res.status(400).json({ error: 'postId required' });
+            /* BULK: ?postIds=id1,id2,id3 */
+            const postIds = req.query.postIds;
+            if (postIds) {
+                const ids  = postIds.split(',').map(s => s.trim()).filter(Boolean);
+                const docs = await Engagement.find({ postId: { $in: ids } }).lean();
+                const map  = {};
+                docs.forEach(d => { map[d.postId] = formatDoc(d, user); });
+                /* fill zeros for any postId not yet in DB */
+                ids.forEach(id => {
+                    if (!map[id]) map[id] = { postId: id, views:0, likes:0, loves:0, comments:[], userLiked:false, userLoved:false, commentCount:0 };
+                });
+                return res.status(200).json(map);
+            }
+            /* SINGLE: ?postId=xxx */
+            if (!postId) return res.status(400).json({ error: 'postId or postIds required' });
             const doc = await ensureDoc(postId);
             return res.status(200).json(formatDoc(doc, user));
         }
