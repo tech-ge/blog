@@ -121,8 +121,8 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Unknown action' });
 
     } catch (err) {
-        console.error('Engagement error:', err);
-        return res.status(500).json({ error: 'Server error' });
+        console.error('Engagement error:', err.message, err.stack);
+        return res.status(500).json({ error: err.message || 'Server error' });
     }
 };
 
