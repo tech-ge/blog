@@ -62,7 +62,26 @@ body {
     border-radius: 4px;
     transition: background 0.15s;
 }
-.logout-btn:hover { background: rgba(248, 246, 246, 0.2); }
+.logout-btn:hover { background: rgba(248,246,246,0.2); }
+
+/* Hamburger menu button (mobile) */
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    flex-direction: column;
+    gap: 5px;
+}
+.nav-hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
 
 @keyframes toastIn {
     from { opacity: 0; transform: translateX(-50%) translateY(12px); }
@@ -99,7 +118,7 @@ body {
 }
 
 .auth-tab-btn.active {
-    color: rgb(116, 172, 88); border-bottom-color: rgb(81,255,0); background: #fff;
+    color: rgb(116,172,88); border-bottom-color: rgb(81,255,0); background: #fff;
 }
 
 .auth-inner {
@@ -120,7 +139,7 @@ body {
 .auth-inner input:focus { border-color: rgb(26,59,10); }
 
 .auth-submit {
-    padding: 11px; background: rgb(70, 168, 21); color: rgb(81,255,0);
+    padding: 11px; background: rgb(70,168,21); color: rgb(81,255,0);
     border: none; border-radius: 8px; font-size: 15px; font-weight: 700;
     cursor: pointer; transition: background 0.2s; margin-top: 4px;
 }
@@ -128,7 +147,7 @@ body {
 .auth-submit:hover { background: #2e7d14; }
 
 .auth-switch { text-align: center; font-size: 12px; color: #777; }
-.auth-switch a { color: rgb(79, 133, 52); font-weight: 700; text-decoration: none; }
+.auth-switch a { color: rgb(79,133,52); font-weight: 700; text-decoration: none; }
 .auth-switch a:hover { text-decoration: underline; }
 
 /* ===========================
@@ -153,10 +172,11 @@ body {
     overflow-y: auto;
     flex-shrink: 0;
     height: 100%;
+    transition: transform 0.3s ease;
 }
 
 .sidebar-heading {
-    color: rgb(84, 206, 23);
+    color: rgb(84,206,23);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -183,7 +203,7 @@ body {
 
 .search-input button {
     padding: 7px 10px; border: none;
-    background: rgb(89, 161, 52); color: rgb(81,255,0);
+    background: rgb(89,161,52); color: rgb(81,255,0);
     cursor: pointer; font-size: 13px; transition: background 0.2s;
 }
 
@@ -194,19 +214,19 @@ body {
 
 .sidebar-links li a {
     display: block; padding: 7px 10px; border-radius: 7px;
-    text-decoration: none; color: rgb(3, 65, 17); font-size: 13px; font-weight: 500;
+    text-decoration: none; color: rgb(3,65,17); font-size: 13px; font-weight: 500;
     transition: background 0.15s, color 0.15s; border-left: 3px solid transparent;
 }
 
 .sidebar-links li a:hover {
-    background: #edf7ef; color: rgb(173, 34, 57);
-    border-left-color: rgb(217, 221, 215);
+    background: #edf7ef; color: rgb(173,34,57);
+    border-left-color: rgb(217,221,215);
 }
 
 /* Active public filter */
 .active-filter {
-    background: rgb(232, 238, 228) !important;
-    color: rgb(59, 175, 6) !important;
+    background: rgb(232,238,228) !important;
+    color: rgb(59,175,6) !important;
     border-left-color: rgb(81,255,0) !important;
 }
 
@@ -255,15 +275,15 @@ body {
 .post-card {
     background: #fff;
     border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(71, 194, 9, 0.08);
+    box-shadow: 0 2px 12px rgba(71,194,9,0.08);
     margin-bottom: 24px;
     overflow: hidden;
-    border-left: 4px solid rgb(254, 255, 253);
+    border-left: 4px solid rgb(254,255,253);
     transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .post-card:hover {
-    box-shadow: 0 6px 24px rgba(92, 223, 26, 0.14);
+    box-shadow: 0 6px 24px rgba(92,223,26,0.14);
     transform: translateY(-1px);
 }
 
@@ -295,13 +315,13 @@ body {
 
 .rm-date {
     font-size: 12px;
-    color: rgba(207, 19, 19, 0.7);
+    color: rgba(207,19,19,0.7);
     font-style: italic;
 }
 
 .post-category-badge {
     font-size: 10px; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 1px; background: rgb(255, 255, 255); color: rgb(60, 255, 0);
+    letter-spacing: 1px; background: rgb(255,255,255); color: rgb(60,255,0);
     padding: 3px 10px; border-radius: 20px; display: inline-block;
 }
 
@@ -318,21 +338,21 @@ body {
     display: flex;
     gap: 0;
     min-height: 160px;
-    overflow: hidden;          /* ← ADDED */
+    overflow: hidden;
 }
 
 .post-left {
     flex: 1;
-    min-width: 0;              /* ← ADDED — stops text pushing column wider */
+    min-width: 0;
     padding: 16px 18px 16px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     border-right: 1px solid #eaf7ec;
-    overflow: hidden;          /* ← ADDED */
+    overflow: hidden;
 }
 
-/* ← NEW RULE — for posts with no media */
+/* For posts with no media */
 .post-left-full {
     border-right: none;
     padding-right: 20px;
@@ -343,8 +363,8 @@ body {
     font-size: 13.5px;
     line-height: 1.7;
     flex: 1;
-    word-break: break-word;    /* ← ADDED */
-    overflow: hidden;          /* ← ADDED */
+    word-break: break-word;
+    overflow: hidden;
 }
 
 .read-more-btn {
@@ -360,13 +380,18 @@ body {
     cursor: pointer;
     letter-spacing: 0.4px;
     transition: background 0.2s, transform 0.15s;
-    flex-shrink: 0;            /* ← ADDED */
+    flex-shrink: 0;
+}
+
+.read-more-btn:hover {
+    background: #2e7d14;
+    transform: translateX(2px);
 }
 
 .post-right {
     width: 220px;
-    min-width: 220px;          /* ← ADDED */
-    max-width: 220px;          /* ← ADDED */
+    min-width: 220px;
+    max-width: 220px;
     flex-shrink: 0;
     padding: 14px 16px;
     display: flex;
@@ -374,13 +399,13 @@ body {
     align-items: center;
     gap: 8px;
     background: #f7fbf7;
-    overflow: hidden;          /* ← ADDED */
+    overflow: hidden;
 }
 
 .post-media {
     width: 100%;
-    overflow: hidden;          /* ← ADDED */
-    border-radius: 9px;        /* ← ADDED */
+    overflow: hidden;
+    border-radius: 9px;
 }
 
 .post-media img {
@@ -389,7 +414,7 @@ body {
     object-fit: cover;
     border-radius: 9px;
     display: block;
-    max-width: 100%;           /* ← ADDED */
+    max-width: 100%;
 }
 
 .post-media iframe {
@@ -398,7 +423,7 @@ body {
     border-radius: 9px;
     border: none;
     display: block;
-    max-width: 100%;           /* ← ADDED */
+    max-width: 100%;
 }
 
 .post-caption {
@@ -407,8 +432,8 @@ body {
     font-size: 11.5px;
     text-align: center;
     line-height: 1.4;
-    word-break: break-word;    /* ← ADDED */
-    width: 100%;               /* ← ADDED */
+    word-break: break-word;
+    width: 100%;
 }
 
 /* ══════════════════════════════
@@ -430,7 +455,7 @@ body {
 
 .rm-header {
     padding: 20px 24px 14px;
-    background: rgb(109, 146, 90);
+    background: rgb(109,146,90);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -504,6 +529,7 @@ body {
     overflow-y: auto;
     flex-shrink: 0;
     height: 100%;
+    transition: transform 0.3s ease;
 }
 
 #toc-list { list-style: none; display: flex; flex-direction: column; gap: 3px; }
@@ -516,7 +542,7 @@ body {
 }
 
 #toc-list li a:hover {
-    background: #bde6e9; border-left-color: rgb(231, 235, 230); color: rgb(32, 22, 124);
+    background: #bde6e9; border-left-color: rgb(231,235,230); color: rgb(32,22,124);
 }
 
 #toc-list li a .toc-cat {
@@ -529,7 +555,7 @@ body {
 =========================== */
 .overlay-bg {
     position: fixed; inset: 0;
-    background: rgba(216, 8, 8, 0.55);
+    background: rgba(216,8,8,0.55);
     z-index: 3000;
     display: flex;
     align-items: center;
@@ -537,7 +563,6 @@ body {
     animation: fadeIn 0.2s ease;
 }
 
-/* The hidden side-panel overrides alignment to slide from right */
 .overlay-bg:has(.hidden-panel) {
     align-items: flex-start;
     justify-content: flex-end;
@@ -548,7 +573,7 @@ body {
 }
 
 /* ===========================
-   HIDDEN SECTION PANEL (slides in from right)
+   HIDDEN SECTION PANEL
 =========================== */
 .hidden-panel {
     width: 70%;
@@ -569,7 +594,7 @@ body {
 .hidden-panel-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 18px 24px;
-    background: rgb(111, 179, 77);
+    background: rgb(111,179,77);
     color: rgb(81,255,0);
     flex-shrink: 0;
 }
@@ -617,11 +642,8 @@ body {
 }
 
 .lock-icon { font-size: 48px; margin-bottom: 12px; }
-
 .login-prompt-box h2 { color: rgb(26,59,10); margin-bottom: 10px; }
-
 .login-prompt-box p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
-
 .prompt-btn { width: 100%; font-size: 16px; }
 
 /* ===========================
@@ -685,11 +707,10 @@ body {
     transform: translateY(-1px);
 }
 
-/* Active / reacted state */
 .eng-btn.reacted {
-    background: rgb(180, 45, 11);
+    background: rgb(180,45,11);
     color: rgb(81,255,0);
-    border-color: rgb(126, 209, 85);
+    border-color: rgb(126,209,85);
 }
 
 .eng-btn.reacted:hover {
@@ -735,7 +756,7 @@ body {
 .comments-heading {
     font-size: 14px;
     font-weight: 700;
-    color: rgb(111, 184, 74);
+    color: rgb(111,184,74);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding-bottom: 6px;
@@ -753,7 +774,7 @@ body {
     background: #f7fbf7;
     border-radius: 9px;
     padding: 10px 14px;
-    border-left: 3px solid rgb(243, 243, 242);
+    border-left: 3px solid rgb(243,243,242);
 }
 
 .comment-meta {
@@ -768,21 +789,12 @@ body {
 .comment-author {
     font-size: 12px;
     font-weight: 700;
-    color: rgb(45, 149, 180);
+    color: rgb(45,149,180);
 }
 
-.comment-time {
-    font-size: 10.5px;
-    color: #aaa;
-}
+.comment-time { font-size: 10.5px; color: #aaa; }
+.comment-text { font-size: 13.5px; color: #333; line-height: 1.6; }
 
-.comment-text {
-    font-size: 13.5px;
-    color: #333;
-    line-height: 1.6;
-}
-
-/* Comment input area */
 .comment-input-wrap {
     display: flex;
     flex-direction: column;
@@ -802,9 +814,7 @@ body {
     min-height: 70px;
 }
 
-.comment-input-wrap textarea:focus {
-    border-color: rgb(26,59,10);
-}
+.comment-input-wrap textarea:focus { border-color: rgb(26,59,10); }
 
 .comment-submit-btn {
     align-self: flex-end;
@@ -812,7 +822,6 @@ body {
     font-size: 13px;
 }
 
-/* Login note under comments */
 .comment-login-note {
     text-align: center;
     font-size: 13px;
@@ -823,16 +832,11 @@ body {
     border: 1px dashed #d4ecd8;
 }
 
-.comment-login-note a {
-    color: rgb(26,59,10);
-    font-weight: 700;
-    text-decoration: none;
-}
-
+.comment-login-note a { color: rgb(26,59,10); font-weight: 700; text-decoration: none; }
 .comment-login-note a:hover { text-decoration: underline; }
 
 /* ===========================
-   POST FOOTER (inside Read More modal + cards)
+   POST FOOTER (modal + cards)
 =========================== */
 .post-footer {
     margin-top: 28px;
@@ -849,7 +853,6 @@ body {
     padding: 28px 26px 20px;
 }
 
-/* Brand column */
 .pf-brand { flex: 1.4; min-width: 160px; }
 
 .pf-logo {
@@ -863,13 +866,8 @@ body {
 .pf-logo .green { color: rgb(81,255,0); }
 .pf-logo .red   { color: red; }
 
-.pf-brand p {
-    color: #ccc;
-    font-size: 12.5px;
-    line-height: 1.6;
-}
+.pf-brand p { color: #ccc; font-size: 12.5px; line-height: 1.6; }
 
-/* Social column */
 .pf-social { flex: 1; min-width: 140px; }
 
 .pf-follow {
@@ -882,18 +880,11 @@ body {
     margin-bottom: 12px;
 }
 
-.pf-social-links {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
+.pf-social-links { display: flex; gap: 10px; flex-wrap: wrap; }
 
 .pf-social-links a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
     color: rgb(124,253,4);
@@ -902,12 +893,8 @@ body {
     transition: background 0.2s, transform 0.15s;
 }
 
-.pf-social-links a:hover {
-    background: #f31404;
-    transform: translateY(-2px);
-}
+.pf-social-links a:hover { background: #f31404; transform: translateY(-2px); }
 
-/* Quick links column */
 .pf-links { flex: 1; min-width: 120px; }
 
 .pf-links-title {
@@ -920,68 +907,33 @@ body {
     margin-bottom: 12px;
 }
 
-.pf-links ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.pf-links ul a {
-    color: #ccc;
-    text-decoration: none;
-    font-size: 12.5px;
-    transition: color 0.2s;
-}
-
+.pf-links ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.pf-links ul a { color: #ccc; text-decoration: none; font-size: 12.5px; transition: color 0.2s; }
 .pf-links ul a:hover { color: #4df0ac; }
 
-/* Newsletter column */
 .pf-newsletter { flex: 1.4; min-width: 160px; }
+.pf-newsletter p { color: #ccc; font-size: 12px; margin-bottom: 10px; line-height: 1.5; }
 
-.pf-newsletter p {
-    color: #ccc;
-    font-size: 12px;
-    margin-bottom: 10px;
-    line-height: 1.5;
-}
-
-.pf-subscribe {
-    display: flex;
-    gap: 6px;
-}
+.pf-subscribe { display: flex; gap: 6px; }
 
 .pf-email-input {
-    flex: 1;
-    padding: 8px 10px;
-    border-radius: 7px;
+    flex: 1; padding: 8px 10px; border-radius: 7px;
     border: 1px solid rgba(255,255,255,0.15);
     background: rgba(255,255,255,0.07);
-    color: #fff;
-    font-size: 12px;
-    outline: none;
-    min-width: 0;
+    color: #fff; font-size: 12px; outline: none; min-width: 0;
 }
 
 .pf-email-input::placeholder { color: #888; }
 .pf-email-input:focus { border-color: #4df0ac; }
 
 .pf-subscribe-btn {
-    padding: 8px 14px;
-    background: #4df0ac;
-    color: #18191f;
-    border: none;
-    border-radius: 7px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
+    padding: 8px 14px; background: #4df0ac; color: #18191f;
+    border: none; border-radius: 7px; font-size: 12px; font-weight: 700;
+    cursor: pointer; white-space: nowrap; transition: background 0.2s;
 }
 
 .pf-subscribe-btn:hover { background: rgb(81,255,0); }
 
-/* Copyright bar */
 .pf-copyright {
     text-align: center;
     padding: 12px 20px;
@@ -990,7 +942,7 @@ body {
     font-size: 11.5px;
 }
 
-/* ── Card-level mini footer (on cards in the feed) ── */
+/* ── Card-level mini footer ── */
 .card-footer {
     background: #1a2525;
     border-radius: 0 0 14px 14px;
@@ -1002,26 +954,15 @@ body {
     gap: 10px;
 }
 
-.card-footer-brand {
-    font-size: 13px;
-    font-weight: 700;
-    color: #ccc;
-}
-
+.card-footer-brand { font-size: 13px; font-weight: 700; color: #ccc; }
 .card-footer-brand .green { color: rgb(81,255,0); }
 .card-footer-brand .red   { color: red; }
 
-.card-footer-socials {
-    display: flex;
-    gap: 8px;
-}
+.card-footer-socials { display: flex; gap: 8px; }
 
 .card-footer-socials a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
     color: rgb(124,253,4);
@@ -1030,10 +971,7 @@ body {
     transition: background 0.2s, transform 0.15s;
 }
 
-.card-footer-socials a:hover {
-    background: #f31404;
-    transform: translateY(-2px);
-}
+.card-footer-socials a:hover { background: #f31404; transform: translateY(-2px); }
 
 /* ===========================
    SUBSCRIBE BUTTON (navbar)
@@ -1053,10 +991,7 @@ body {
     font-family: cursive;
 }
 
-.nav-subscribe-btn:hover {
-    background: #fff;
-    transform: scale(1.05);
-}
+.nav-subscribe-btn:hover { background: #fff; transform: scale(1.05); }
 
 /* ===========================
    SUBSCRIBE MODAL
@@ -1074,50 +1009,20 @@ body {
     animation: popIn 0.22s ease;
 }
 
-.subscribe-icon {
-    font-size: 52px;
-    margin-bottom: 10px;
-}
+.subscribe-icon { font-size: 52px; margin-bottom: 10px; }
+.subscribe-box h2 { color: rgb(26,59,10); font-size: 1.4rem; margin-bottom: 8px; }
+.subscribe-box > p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 22px; }
 
-.subscribe-box h2 {
-    color: rgb(26,59,10);
-    font-size: 1.4rem;
-    margin-bottom: 8px;
-}
-
-.subscribe-box > p {
-    color: #666;
-    font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 22px;
-}
-
-.subscribe-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 14px;
-}
+.subscribe-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
 
 .subscribe-form input {
-    padding: 11px 14px;
-    border: 1.5px solid #d4ecd8;
-    border-radius: 9px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
+    padding: 11px 14px; border: 1.5px solid #d4ecd8; border-radius: 9px;
+    font-size: 14px; outline: none; transition: border-color 0.2s; width: 100%;
 }
 
 .subscribe-form input:focus { border-color: rgb(26,59,10); }
-
 .sub-submit-btn { font-size: 15px; margin-top: 4px; }
-
-.sub-note {
-    font-size: 12px;
-    color: #999;
-    margin-top: 8px;
-}
+.sub-note { font-size: 12px; color: #999; margin-top: 8px; }
 
 /* ===========================
    SHARE MODAL
@@ -1134,99 +1039,44 @@ body {
     animation: popIn 0.22s ease;
 }
 
-.share-box h2 {
-    color: rgb(26,59,10);
-    font-size: 1.25rem;
-    margin-bottom: 6px;
-    text-align: center;
-}
+.share-box h2 { color: rgb(26,59,10); font-size: 1.25rem; margin-bottom: 6px; text-align: center; }
+.share-post-label { text-align: center; font-size: 13px; color: #777; font-style: italic; margin-bottom: 18px; line-height: 1.4; }
 
-.share-post-label {
-    text-align: center;
-    font-size: 13px;
-    color: #777;
-    font-style: italic;
-    margin-bottom: 18px;
-    line-height: 1.4;
-}
-
-/* Copy link row */
-.share-link-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-}
+.share-link-row { display: flex; gap: 8px; margin-bottom: 20px; }
 
 .share-link-input {
-    flex: 1;
-    padding: 9px 12px;
-    border: 1.5px solid #d4ecd8;
-    border-radius: 9px;
-    font-size: 12px;
-    color: #444;
-    outline: none;
-    background: #f7fbf7;
-    min-width: 0;
-    cursor: text;
+    flex: 1; padding: 9px 12px; border: 1.5px solid #d4ecd8; border-radius: 9px;
+    font-size: 12px; color: #444; outline: none; background: #f7fbf7; min-width: 0; cursor: text;
 }
 
 .copy-link-btn {
-    padding: 9px 14px;
-    background: rgb(26,59,10);
-    color: rgb(81,255,0);
-    border: none;
-    border-radius: 9px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
+    padding: 9px 14px; background: rgb(26,59,10); color: rgb(81,255,0);
+    border: none; border-radius: 9px; font-size: 12px; font-weight: 700;
+    cursor: pointer; white-space: nowrap; transition: background 0.2s;
 }
 
 .copy-link-btn:hover { background: #2e7d14; }
 
-/* Social share buttons */
-.share-socials {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-}
+.share-socials { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 
 .share-social-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 11px 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-    transition: opacity 0.2s, transform 0.15s;
-    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 11px 14px; border-radius: 10px;
+    text-decoration: none; font-size: 13px; font-weight: 700;
+    transition: opacity 0.2s, transform 0.15s; color: #fff;
 }
 
 .share-social-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-
 .share-social-btn.wa { background: #25D366; }
 .share-social-btn.fb { background: #1877F2; }
 .share-social-btn.tw { background: #000; }
 .share-social-btn.tg { background: #229ED9; }
 
-/* Private post notice */
 .share-private-note {
-    background: #fff8e6;
-    border: 1px solid #ffd966;
-    border-radius: 9px;
-    padding: 10px 14px;
-    font-size: 12.5px;
-    color: #7a5c00;
-    text-align: center;
-    line-height: 1.5;
+    background: #fff8e6; border: 1px solid #ffd966; border-radius: 9px;
+    padding: 10px 14px; font-size: 12.5px; color: #7a5c00; text-align: center; line-height: 1.5;
 }
 
-/* Share button in engagement bar */
 .share-btn {
     margin-left: auto;
     background: #f0f9f0 !important;
@@ -1239,7 +1089,8 @@ body {
     color: rgb(81,255,0) !important;
     border-color: rgb(26,59,10) !important;
 }
-/* Admin dashboard link in navbar (visible only to admins) */
+
+/* Admin dashboard link in navbar */
 .admin-dash-link {
     font-size: 15px;
     text-decoration: none;
@@ -1249,3 +1100,177 @@ body {
     vertical-align: middle;
 }
 .admin-dash-link:hover { background: rgba(255,255,255,0.15); }
+
+/* ===========================
+   RESPONSIVE — TABLET (≤900px)
+=========================== */
+@media (max-width: 900px) {
+
+    /* Hide right sidebar on tablet */
+    .side-titles { display: none; }
+
+    /* Shrink left sidebar */
+    .side-nav { width: 160px; min-width: 140px; }
+
+    /* Smaller nav text */
+    .ul li a { font-size: 13px; padding: 6px 8px; }
+    .nav-subscribe-btn { padding: 6px 10px; font-size: 12px; }
+
+    /* Post card right column smaller */
+    .post-right { width: 180px; min-width: 180px; max-width: 180px; }
+}
+
+/* ===========================
+   RESPONSIVE — MOBILE (≤640px)
+=========================== */
+@media (max-width: 640px) {
+
+    /* Body scrolls on mobile */
+    body { height: auto; overflow: auto; }
+    .main { height: auto; overflow: visible; }
+
+    /* Navbar */
+    .nav { padding: 0 14px; flex-wrap: wrap; position: sticky; top: 0; }
+    .nav h1 { font-size: 1.3rem; }
+
+    /* Show hamburger, hide nav links by default */
+    .nav-hamburger { display: flex; }
+
+    .ul {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        background: rgb(103,168,71);
+        padding: 8px 0 12px;
+        gap: 2px;
+        order: 3;
+    }
+
+    .ul.nav-open { display: flex; }
+
+    .ul li a {
+        font-size: 14px;
+        padding: 10px 16px;
+        border-radius: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Stack 3 columns into single column */
+    .main { flex-direction: column; }
+
+    /* Left sidebar: horizontal scrolling strip on mobile */
+    .side-nav {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        max-height: 220px;
+        border-right: none;
+        border-bottom: 1px solid #d4ecd8;
+        padding: 10px 14px;
+        overflow-y: auto;
+    }
+
+    /* Sidebar links horizontal on mobile */
+    .sidebar-links {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .sidebar-links li a {
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        padding: 5px 10px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .sidebar-links li a:hover,
+    .active-filter {
+        border-left: none !important;
+        border-bottom: 2px solid rgb(81,255,0) !important;
+    }
+
+    /* Hide right sidebar completely */
+    .side-titles { display: none; }
+
+    /* Blog feed full width */
+    .blog-section {
+        height: auto;
+        overflow-y: visible;
+        padding: 14px 12px;
+    }
+
+    /* Card: stack media below content on mobile */
+    .post-card-body {
+        flex-direction: column;
+        min-height: unset;
+    }
+
+    .post-left {
+        border-right: none;
+        border-bottom: 1px solid #eaf7ec;
+        padding: 14px 16px;
+    }
+
+    .post-right {
+        width: 100%;
+        min-width: unset;
+        max-width: unset;
+        padding: 12px 16px;
+    }
+
+    .post-media img,
+    .post-media iframe {
+        height: 180px;
+    }
+
+    /* Engagement bar wraps nicely */
+    .eng-bar { padding: 8px 14px; gap: 6px; }
+    .eng-views { font-size: 11px; }
+    .eng-btn { padding: 4px 10px; font-size: 11px; }
+
+    /* Card footer */
+    .card-footer { padding: 10px 14px; }
+    .card-footer-brand { font-size: 11px; }
+
+    /* Auth form full width */
+    #auth-form { width: calc(100vw - 20px); right: 10px; }
+
+    /* Read more modal full screen */
+    .rm-panel {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .rm-body { padding: 16px 16px 24px; }
+
+    .rm-media img,
+    .rm-media iframe { height: 200px; }
+
+    /* Hidden panel full width on mobile */
+    .hidden-panel { width: 100%; max-width: 100%; }
+
+    /* Share / subscribe modals */
+    .share-box,
+    .subscribe-box { padding: 28px 20px 24px; }
+
+    .share-socials { grid-template-columns: 1fr; }
+
+    /* Post footer wraps */
+    .post-footer-inner { padding: 18px 16px 14px; gap: 18px; }
+}
+
+/* ===========================
+   RESPONSIVE — SMALL MOBILE (≤380px)
+=========================== */
+@media (max-width: 380px) {
+    .nav h1 { font-size: 1.1rem; }
+    .post-title { font-size: 0.95rem; }
+    .post-content { font-size: 12.5px; }
+    .read-more-btn { font-size: 11px; padding: 6px 12px; }
+    .eng-btn { padding: 3px 8px; font-size: 10.5px; }
+}
