@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
 
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (err) {
-        console.error('Subscribers error:', err);
-        return res.status(500).json({ error: 'Server error' });
+        console.error('Subscribers error:', err.message, err.stack);
+        return res.status(500).json({ error: err.message || 'Server error' });
     }
 };
