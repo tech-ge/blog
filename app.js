@@ -15,7 +15,7 @@ const sectionMeta = {
     economics: { label: 'Economics', public: true  },
     news:      { label: 'News',      public: true  },
     updates:   { label: 'Updates',   public: true  },
-    articles:  { label: 'Articles',  public: false },
+    articles:  { label: 'Articles',  public: true  },
     education: { label: 'Education', public: false },
     love:      { label: 'Love',      public: false },
     stories:   { label: 'Stories',   public: false },
@@ -59,7 +59,7 @@ async function attemptLogin(email, password) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login failed');
-    saveSession({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' }, data.token);
+    saveSession({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: 'User' }, data.token);
     authForm.style.display = 'none';
     updateNavForLoggedInUser();
     showToast('Welcome back, ' + data.user.name.split(' ')[0] + '!', 'success');
@@ -73,7 +73,7 @@ async function attemptRegister(name, email, phone, password) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Registration failed');
-    saveSession({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: '👤' }, data.token);
+    saveSession({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role, avatar: 'User' }, data.token);
     authForm.style.display = 'none';
     updateNavForLoggedInUser();
     showToast('Account created! Welcome, ' + data.user.name.split(' ')[0] + '!', 'success');
@@ -100,7 +100,7 @@ function updateNavForLoggedInUser() {
 }
 
 function updateNavForGuest() {
-    loginLink.innerHTML = '👤 Login';
+    loginLink.innerHTML = 'User Login';
     document.querySelectorAll('.hidden-link').forEach(l => { l.style.opacity = '0.7'; l.title = 'Login required'; });
 }
 
