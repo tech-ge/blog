@@ -1,0 +1,19 @@
+{
+  "name": "techgeo-blog",
+  "version": "1.0.0",
+  "description": "TechGeo Blog — East Africa's Tech Blog",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "busboy": "^1.6.0",
+    "cloudinary": "^1.41.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.4"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

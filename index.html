@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: https://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ═══════════════════════════════════════════
+         SITE-WIDE SEO — replace YOUR_DOMAIN with
+         your actual domain once hosted, e.g.:
+         https://techgeo.co.ke
+    ═══════════════════════════════════════════ -->
+
+    <!-- Primary Meta -->
+    <title>TechGeo Blog | Tech, Finance, Health & More — East Africa</title>
+    <meta name="title"       content="TechGeo Blog | Tech, Finance, Health & More — East Africa">
+    <meta name="description" content="TechGeo is East Africa's leading technology blog covering sports, health, finance, politics, religion, economics and more. Based in Nairobi, Kenya.">
+    <meta name="keywords"    content="TechGeo, Kenya tech blog, East Africa news, Nairobi technology, finance, health, sports, politics, economics, religion, Geoffrey Muthoka">
+    <meta name="author"      content="Geoffrey Muthoka">
+    <meta name="robots"      content="index, follow">
+    <meta name="theme-color" content="#1a3b0a">
+    <link rel="canonical"    href="https://YOUR_DOMAIN/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="https://YOUR_DOMAIN/">
+    <meta property="og:site_name"   content="TechGeo Blog">
+    <meta property="og:title"       content="TechGeo Blog | Tech, Finance, Health & More — East Africa">
+    <meta property="og:description" content="East Africa's leading technology blog. Sports, health, finance, politics, economics and more — straight from Nairobi.">
+    <meta property="og:image"       content="https://YOUR_DOMAIN/logo.jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height"content="630">
+    <meta property="og:locale"      content="en_KE">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:site"        content="@TechGeoKE">
+    <meta name="twitter:creator"     content="@TechGeoKE">
+    <meta name="twitter:title"       content="TechGeo Blog | Tech, Finance, Health & More — East Africa">
+    <meta name="twitter:description" content="East Africa's leading technology blog. Sports, health, finance, politics, economics and more — straight from Nairobi.">
+    <meta name="twitter:image"       content="https://YOUR_DOMAIN/logo.jpeg">
+
+    <!-- Geo / Regional -->
+    <meta name="geo.region"      content="KE-30">
+    <meta name="geo.placename"   content="Nairobi, Kenya">
+    <meta name="geo.position"    content="-1.286389;36.817223">
+    <meta name="ICBM"            content="-1.286389, 36.817223">
+    <meta name="language"        content="English">
+    <meta name="revisit-after"   content="3 days">
+    <meta name="rating"          content="general">
+
+    <!-- JSON-LD: WebSite structured data (helps Google Sitelinks Searchbox) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TechGeo Blog",
+        "url": "https://YOUR_DOMAIN/",
+        "description": "East Africa's leading technology and lifestyle blog based in Nairobi, Kenya.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "TechGeo",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://YOUR_DOMAIN/logo.jpeg"
+            }
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://YOUR_DOMAIN/?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <!-- JSON-LD: Blog structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "TechGeo Blog",
+        "url": "https://YOUR_DOMAIN/",
+        "description": "Covering technology, sports, health, finance, politics, economics, religion and more across East Africa.",
+        "inLanguage": "en-KE",
+        "author": {
+            "@type": "Person",
+            "name": "Geoffrey Muthoka",
+            "email": "geoffreymuthoka200@gmail.com"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "TechGeo",
+            "url": "https://YOUR_DOMAIN/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://YOUR_DOMAIN/logo.jpeg",
+                "width": 400,
+                "height": 400
+            }
+        }
+    }
+    </script>
+
+    <!-- Favicon placeholder (replace with real icon) -->
+    <link rel="icon" type="image/jpeg" href="logo.jpeg">
+    <link rel="apple-touch-icon"       href="logo.jpeg">
+
+    <!-- Font Awesome icons (for footer social links) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- NOTE: Per-post meta tags are injected dynamically by app.js
+         when a post is opened in Read More, updating og:title,
+         og:description, og:image and the page <title> for sharing. -->
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="nav">
+        <h1><span class="green">Tech</span><span class="red">Geo</span></h1>
+        <ul class="ul">
+            <li><a href="#" data-filter="all" class="nav-link active-nav" id="nav-home">Home</a></li>
+            <li><a href="#" data-filter="news" class="nav-link" id="nav-news">News</a></li>
+            <li><a href="#" data-filter="blogs" class="nav-link" id="nav-blogs">Blogs</a></li>
+            <li><a href="#" data-filter="articles" class="nav-link" id="nav-articles">Articles</a></li>
+            <li><a href="#" data-filter="updates" class="nav-link" id="nav-updates">Updates</a></li>
+            <li><button class="nav-subscribe-btn" id="subscribe-nav-btn">Subscribe</button></li>
+            <li><a href="#" id="login-link">Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- AUTH FORM DROPDOWN -->
+    <section id="auth-form" style="display:none;">
+        <div id="login-form">
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="login-tab">Login</button>
+                <button class="auth-tab-btn" id="register-tab">Register</button>
+            </div>
+            <form class="auth-inner" onsubmit="return false;">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="you@example.com">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+                <button type="submit" class="auth-submit">Login</button>
+                <p class="auth-switch">No account? <a href="#" id="to-register">Register</a></p>
+            </form>
+        </div>
+        <div id="register-form" style="display:none;">
+            <div class="auth-tabs">
+                <button class="auth-tab-btn" id="login-tab-2">Login</button>
+                <button class="auth-tab-btn active" id="register-tab-2">Register</button>
+            </div>
+            <form class="auth-inner" onsubmit="return false;">
+                <label>Full Name</label>
+                <input type="text" placeholder="John Doe">
+                <label>Email</label>
+                <input type="email" placeholder="you@example.com">
+                <label>Phone</label>
+                <input type="tel" placeholder="+254 7XX XXX XXX">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••">
+                <button type="submit" class="auth-submit">Create Account</button>
+                <p class="auth-switch">Have account? <a href="#" id="to-login">Login</a></p>
+            </form>
+        </div>
+    </section>
+
+    <!-- 3-COLUMN LAYOUT -->
+    <div class="main">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="side-nav">
+
+            <h3 class="sidebar-heading">🔍 Search</h3>
+            <div class="search-input">
+                <input type="search" id="search-box" placeholder="Search posts...">
+                <button id="search-btn">🔍</button>
+            </div>
+
+            <!-- PUBLIC CATEGORIES -->
+            <h3 class="sidebar-heading">Public content</h3>
+            <ul class="sidebar-links">
+                <li><a href="#" data-filter="all"       class="filter-link active-filter" id="link-all">🌐 All Posts</a></li>
+                <li><a href="#" data-filter="sports"    class="filter-link" id="link-sports">🏅 Sports</a></li>
+                <li><a href="#" data-filter="health"    class="filter-link" id="link-health">🏥 Health</a></li>
+                <li><a href="#" data-filter="finance"   class="filter-link" id="link-finance">💰 Finance</a></li>
+                <li><a href="#" data-filter="politics"  class="filter-link" id="link-politics">🏛️ Politics</a></li>
+                <li><a href="#" data-filter="religion"  class="filter-link" id="link-religion">🕌 Religion</a></li>
+                <li><a href="#" data-filter="economics" class="filter-link" id="link-economics">📈 Economics</a></li>
+                <li><a href="#" data-filter="news"      class="filter-link" id="link-news">📰 News</a></li>
+                <li><a href="#" data-filter="articles"  class="filter-link" id="link-articles">📄 Articles</a></li>
+                <li><a href="#" data-filter="updates"   class="filter-link" id="link-updates">🔔 Updates</a></li>
+            </ul>
+
+            <!-- MEMBERS-ONLY SECTIONS -->
+            <h3 class="sidebar-heading">Members Only</h3>
+            <ul class="sidebar-links">
+               
+                <li><a href="#" data-hidden="education" class="hidden-link" id="link-education">📚 Education</a></li>
+                <li><a href="#" data-hidden="love"      class="hidden-link" id="link-love">❤️ Love</a></li>
+                <li><a href="#" data-hidden="stories"   class="hidden-link" id="link-stories">📖 Stories</a></li>
+                <li><a href="#" data-hidden="memes"     class="hidden-link" id="link-memes">😂 Memes</a></li>
+                <li><a href="#" data-hidden="quotes"    class="hidden-link" id="link-quotes">💬 Quotes</a></li>
+                <li><a href="#" data-hidden="darkside"  class="hidden-link" id="link-darkside">🌑 Dark Side</a></li>
+                <li><a href="#" data-hidden="crime"     class="hidden-link" id="link-crime">🚔 Crime</a></li>
+            </ul>
+
+        </aside>
+
+        <!-- CENTER BLOG FEED -->
+        <main class="blog-section" id="blog-feed"></main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="side-titles">
+            <h3 class="sidebar-heading">📌 Latest Topics</h3>
+            <ul id="toc-list"></ul>
+        </aside>
+
+    </div>
+
+    <!-- HIDDEN SECTION PANEL (slide-in overlay) -->
+    <div id="hidden-overlay" class="overlay-bg" style="display:none;">
+        <div class="hidden-panel">
+            <div class="hidden-panel-header">
+                <h2 id="hidden-panel-title">Section</h2>
+                <button class="close-panel" id="close-panel">✕ Close</button>
+            </div>
+            <div id="hidden-panel-feed" class="hidden-panel-feed"></div>
+        </div>
+    </div>
+
+    <!-- LOGIN PROMPT (for locked sections) -->
+    <div id="login-prompt" class="overlay-bg" style="display:none;">
+        <div class="login-prompt-box">
+            <button class="close-panel close-small" id="close-prompt">✕</button>
+            <div class="lock-icon">🔒</div>
+            <h2>Members Only</h2>
+            <p>This section is for registered members.<br>Login or create a free account to access it.</p>
+            <button class="auth-submit prompt-btn" id="prompt-login-btn">Login / Register</button>
+        </div>
+    </div>
+
+    <!-- READ MORE MODAL -->
+    <div id="read-more-modal" class="overlay-bg" style="display:none;">
+        <div class="rm-panel">
+            <div class="rm-header">
+                <span class="post-category-badge" id="rm-badge"></span>
+                <h2 id="rm-title"></h2>
+                <span class="rm-date" id="rm-date"></span>
+                <button class="close-panel close-small" id="close-read-more">✕</button>
+            </div>
+            <div class="rm-body">
+                <div id="rm-media-wrap"></div>
+                <p class="post-caption" id="rm-caption"></p>
+                <p class="rm-full-content" id="rm-content"></p>
+
+                <!-- Engagement bar inside modal -->
+                <div class="rm-eng-bar">
+                    <span class="eng-views"><span id="rm-views-count">0</span> views</span>
+                    <button class="eng-btn like-btn" id="rm-like-btn">👍 <span id="rm-like-count">0</span></button>
+                    <button class="eng-btn love-btn" id="rm-love-btn">❤️ <span id="rm-love-count">0</span></button>
+                    <span class="eng-comment-label">💬 <span id="rm-comment-count">0</span> comments</span>
+                    <button class="eng-btn share-btn" id="rm-share-btn">Share</button>
+                </div>
+
+                <!-- Comments section -->
+                <div id="rm-comments-section">
+                    <h3 class="comments-heading">Comments</h3>
+                    <div id="rm-comments-list"></div>
+
+                    <!-- Comment input — visible when logged in -->
+                    <div id="rm-comment-input-wrap" class="comment-input-wrap" style="display:none;">
+                        <textarea id="rm-comment-box" placeholder="Write a comment..." rows="3"></textarea>
+                        <button id="rm-comment-submit" class="auth-submit comment-submit-btn">Post Comment</button>
+                    </div>
+
+                    <!-- Login prompt — visible when logged out -->
+                    <p id="rm-comment-login-note" class="comment-login-note" style="display:block;">
+                        <a href="#">Login</a> to like, love, and comment on this post.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SUBSCRIBE MODAL -->
+    <div id="subscribe-modal" class="overlay-bg" style="display:none;">
+        <div class="subscribe-box">
+            <button class="close-panel close-small" id="close-subscribe">✕</button>
+            <div class="subscribe-icon">🔔</div>
+            <h2>Stay in the Loop</h2>
+            <p>Get TechGeo's latest stories delivered straight to your inbox — free, weekly, no spam.</p>
+            <form class="subscribe-form" id="subscribe-form">
+                <input type="text"  id="sub-name"  placeholder="Your name" required>
+                <input type="email" id="sub-email" placeholder="your@email.com" required>
+                <button type="submit" class="auth-submit sub-submit-btn" id="sub-btn">Subscribe Now</button>
+            </form>
+            <p class="sub-note">Join <strong id="sub-count">0</strong> readers already subscribed.</p>
+        </div>
+    </div>
+
+    <!-- SHARE MODAL -->
+    <div id="share-modal" class="overlay-bg" style="display:none;">
+        <div class="share-box">
+            <button class="close-panel close-small" id="close-share">✕</button>
+            <h2>Share this Post</h2>
+            <p id="share-post-title" class="share-post-label"></p>
+
+            <!-- Copy link -->
+            <div class="share-link-row">
+                <input type="text" id="share-link-input" class="share-link-input" readonly>
+                <button id="copy-link-btn" class="copy-link-btn">Copy</button>
+            </div>
+
+            <!-- Social share buttons -->
+            <div class="share-socials">
+                <a id="share-wa"  class="share-social-btn wa"  target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a id="share-fb"  class="share-social-btn fb"  target="_blank">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a id="share-tw"  class="share-social-btn tw"  target="_blank">
+                    <i class="fab fa-x-twitter"></i> X / Twitter
+                </a>
+                <a id="share-tg"  class="share-social-btn tg"  target="_blank">
+                    <i class="fab fa-telegram"></i> Telegram
+                </a>
+            </div>
+
+            <!-- Lock notice for private posts -->
+            <p id="share-private-note" class="share-private-note" style="display:none;">
+                 This is a members-only post. Recipients will need to <strong>login</strong> to view the full content.
+            </p>
+        </div>
+    </div>
+
+    <script src="content.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechGeo Admin Dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ═══════════════════════════
+     LOGIN GATE  (shown when not logged in as admin)
+═══════════════════════════ -->
+<div id="admin-login-gate" class="gate-wrap">
+    <div class="gate-box">
+        <div class="gate-logo"><span class="green">Tech</span><span class="red">Geo</span></div>
+        <h2>Admin Login</h2>
+        <p class="gate-sub">Sign in with your admin account</p>
+        <form id="gate-form" class="gate-form">
+            <label>Email</label>
+            <input type="email" id="gate-email" placeholder="admin@example.com" required>
+            <label>Password</label>
+            <input type="password" id="gate-password" placeholder="••••••••" required>
+            <button type="submit" class="gate-btn" id="gate-btn">Login</button>
+            <p id="gate-error" class="gate-error" style="display:none;"></p>
+        </form>
+        <a href="index.html" class="gate-back">← Back to blog</a>
+    </div>
+</div>
+
+<!-- ═══════════════════════════
+     ADMIN DASHBOARD  (shown after admin login)
+═══════════════════════════ -->
+<div id="admin-dashboard" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <span class="green">Tech</span><span class="red">Geo</span>
+            <span class="admin-badge">Admin</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="#" class="admin-nav-link active" data-panel="overview">
+                <i class="fas fa-chart-bar"></i> Overview
+            </a>
+            <a href="#" class="admin-nav-link" data-panel="posts">
+                <i class="fas fa-newspaper"></i> Posts
+            </a>
+            <a href="#" class="admin-nav-link" data-panel="new-post">
+                <i class="fas fa-plus-circle"></i> New Post
+            </a>
+            <a href="#" class="admin-nav-link" data-panel="users">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="#" class="admin-nav-link" data-panel="subscribers">
+                <i class="fas fa-envelope"></i> Subscribers
+            </a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <span id="admin-name-display"></span>
+            <button id="admin-logout-btn" class="admin-logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+            <a href="index.html" class="view-blog-link" target="_blank">
+                <i class="fas fa-external-link-alt"></i> View Blog
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+
+        <!-- TOP BAR -->
+        <div class="admin-topbar">
+            <h1 class="admin-page-title" id="panel-title">Overview</h1>
+            <div class="admin-topbar-right">
+                <span class="admin-greeting">Welcome, <strong id="admin-greeting-name"></strong></span>
+            </div>
+        </div>
+
+        <!-- ── PANEL: OVERVIEW ── -->
+        <div class="admin-panel active" id="panel-overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-newspaper stat-icon"></i>
+                    <div class="stat-info">
+                        <span class="stat-num" id="stat-posts">—</span>
+                        <span class="stat-label">Total Posts</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-users stat-icon"></i>
+                    <div class="stat-info">
+                        <span class="stat-num" id="stat-users">—</span>
+                        <span class="stat-label">Registered Users</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-envelope stat-icon"></i>
+                    <div class="stat-info">
+                        <span class="stat-num" id="stat-subs">—</span>
+                        <span class="stat-label">Subscribers</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-lock stat-icon"></i>
+                    <div class="stat-info">
+                        <span class="stat-num" id="stat-members-posts">—</span>
+                        <span class="stat-label">Members-Only Posts</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overview-recent">
+                <h3>Recent Posts</h3>
+                <div id="overview-posts-list" class="overview-list">
+                    <p class="loading-msg">Loading…</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PANEL: ALL POSTS ── -->
+        <div class="admin-panel" id="panel-posts">
+            <div class="panel-toolbar">
+                <input type="search" id="posts-search" placeholder="Search posts…" class="admin-search">
+                <select id="posts-filter-section" class="admin-select">
+                    <option value="">All Sections</option>
+                    <option>sports</option><option>health</option><option>finance</option>
+                    <option>politics</option><option>religion</option><option>economics</option>
+                    <option>news</option><option>updates</option><option>articles</option>
+                    <option>education</option><option>love</option><option>stories</option>
+                    <option>memes</option><option>quotes</option><option>darkside</option>
+                    <option>crime</option>
+                </select>
+                <select id="posts-filter-vis" class="admin-select">
+                    <option value="">All Visibility</option>
+                    <option value="public">Public</option>
+                    <option value="members">Members Only</option>
+                </select>
+                <button class="admin-btn primary" onclick="showPanel('new-post')">
+                    <i class="fas fa-plus"></i> New Post
+                </button>
+            </div>
+            <div id="posts-table-wrap" class="table-wrap">
+                <p class="loading-msg">Loading posts…</p>
+            </div>
+        </div>
+
+        <!-- ── PANEL: NEW / EDIT POST ── -->
+        <div class="admin-panel" id="panel-new-post">
+            <form id="post-form" class="post-form" enctype="multipart/form-data">
+                <input type="hidden" id="edit-post-id">
+
+                <div class="form-row">
+                    <div class="form-group full">
+                        <label>Post Title <span class="req">*</span></label>
+                        <input type="text" id="pf-title" placeholder="Enter a compelling title…" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Section <span class="req">*</span></label>
+                        <select id="pf-section" required>
+                            <option value="">— Select section —</option>
+                            <optgroup label="Public">
+                                <option value="sports">🏅 Sports</option>
+                                <option value="health">🏥 Health</option>
+                                <option value="finance">💰 Finance</option>
+                                <option value="politics">🏛️ Politics</option>
+                                <option value="religion">🕌 Religion</option>
+                                <option value="economics">📈 Economics</option>
+                                <option value="news">📰 News</option>
+                                <option value="updates">🔔 Updates</option>
+                            </optgroup>
+                            <optgroup label="Members Only">
+                                <option value="articles">📄 Articles</option>
+                                <option value="education">📚 Education</option>
+                                <option value="love">❤️ Love</option>
+                                <option value="stories">📖 Stories</option>
+                                <option value="memes">😂 Memes</option>
+                                <option value="quotes">💬 Quotes</option>
+                                <option value="darkside">🌑 Dark Side</option>
+                                <option value="crime">🚔 Crime</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Visibility <span class="req">*</span></label>
+                        <select id="pf-visibility" required>
+                            <option value="public">🌐 Public</option>
+                            <option value="members">🔒 Members Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- MEDIA -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Media Type</label>
+                        <select id="pf-media-type" onchange="toggleMediaInput()">
+                            <option value="none">No media</option>
+                            <option value="image">Image</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Media source toggle -->
+                <div id="media-source-wrap" class="form-row" style="display:none;">
+                    <div class="form-group full">
+                        <div class="media-source-tabs">
+                            <button type="button" class="media-tab active" id="tab-link" onclick="switchMediaTab('link')">
+                                <i class="fas fa-link"></i> URL / Link
+                            </button>
+                            <button type="button" class="media-tab" id="tab-upload" onclick="switchMediaTab('upload')">
+                                <i class="fas fa-upload"></i> Upload File
+                            </button>
+                        </div>
+
+                        <!-- Link input -->
+                        <div id="media-link-wrap">
+                            <input type="url" id="pf-media-url" placeholder="https://example.com/image.jpg or YouTube embed URL…">
+                            <p class="form-hint">Paste any direct image URL, YouTube embed, or video URL</p>
+                        </div>
+
+                        <!-- Upload input -->
+                        <div id="media-upload-wrap" style="display:none;">
+                            <div class="upload-drop-zone" id="upload-drop-zone">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop or <label for="pf-media-file" class="upload-browse">browse</label></p>
+                                <input type="file" id="pf-media-file" accept="image/*,video/*" style="display:none;">
+                                <p class="form-hint">Images: JPG, PNG, GIF, WEBP · Videos: MP4, MOV, WEBM</p>
+                            </div>
+                            <div id="upload-preview" style="display:none;"></div>
+                            <div id="upload-progress" style="display:none;">
+                                <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                                <span id="upload-status">Uploading…</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row" id="caption-wrap" style="display:none;">
+                    <div class="form-group full">
+                        <label>Caption</label>
+                        <input type="text" id="pf-caption" placeholder="Short description shown below the media…">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full">
+                        <label>Content <span class="req">*</span></label>
+                        <textarea id="pf-content" rows="12" placeholder="Write the full article content here…" required></textarea>
+                        <p class="form-hint"><span id="content-char-count">0</span> characters</p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="admin-btn secondary" onclick="resetPostForm()">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                    <button type="submit" class="admin-btn primary" id="post-submit-btn">
+                        <i class="fas fa-paper-plane"></i> Publish Post
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── PANEL: USERS ── -->
+        <div class="admin-panel" id="panel-users">
+            <div class="panel-toolbar">
+                <input type="search" id="users-search" placeholder="Search users…" class="admin-search">
+            </div>
+            <div id="users-table-wrap" class="table-wrap">
+                <p class="loading-msg">Loading users…</p>
+            </div>
+        </div>
+
+        <!-- ── PANEL: SUBSCRIBERS ── -->
+        <div class="admin-panel" id="panel-subscribers">
+            <div class="panel-toolbar">
+                <input type="search" id="subs-search" placeholder="Search subscribers…" class="admin-search">
+                <button class="admin-btn secondary" id="export-subs-btn">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+            </div>
+            <div id="subs-table-wrap" class="table-wrap">
+                <p class="loading-msg">Loading subscribers…</p>
+            </div>
+        </div>
+
+    </main><!-- /admin-main -->
+
+</div><!-- /admin-dashboard -->
+
+<!-- CONFIRM DELETE DIALOG -->
+<div id="confirm-dialog" class="confirm-overlay" style="display:none;">
+    <div class="confirm-box">
+        <h3 id="confirm-title">Are you sure?</h3>
+        <p id="confirm-msg"></p>
+        <div class="confirm-actions">
+            <button class="admin-btn secondary" id="confirm-cancel">Cancel</button>
+            <button class="admin-btn danger"    id="confirm-ok">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="admin-toast" style="display:none;"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
