@@ -333,7 +333,7 @@ function buildCard(post) {
         ? '<img src="' + escHtml(post.media) + '" alt="' + escHtml(post.caption || '') + '">'
         : '';
 
-    const preview   = post.content.length > 140 ? post.content.slice(0, 140) + '...' : post.content;
+    const preview   = post.content.length > 400 ? post.content.slice(0, 400) + '...' : post.content;
     const dateBadge = post.date ? '<span class="post-date">' + escHtml(post.date) + '</span>' : '';
     const leftClass = hasMedia ? 'post-left' : 'post-left post-left-full';
     const rightCol  = hasMedia
