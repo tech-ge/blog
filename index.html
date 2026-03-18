@@ -121,14 +121,17 @@
     <!-- NAVBAR -->
     <nav class="nav">
         <h1><span class="green">Tech</span><span class="red">Geo</span></h1>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
         <ul class="ul">
-            <li><a href="#" data-filter="all" class="nav-link active-nav" id="nav-home">Home</a></li>
-            <li><a href="#" data-filter="news" class="nav-link" id="nav-news">News</a></li>
-            <li><a href="#" data-filter="blogs" class="nav-link" id="nav-blogs">Blogs</a></li>
-            <li><a href="#" data-filter="articles" class="nav-link" id="nav-articles">Articles</a></li>
-            <li><a href="#" data-filter="updates" class="nav-link" id="nav-updates">Updates</a></li>
-            <li><button class="nav-subscribe-btn" id="subscribe-nav-btn">Subscribe</button></li>
-            <li><a href="#" id="login-link">Login</a></li>
+            <li><a href="#" data-filter="all" class="nav-link active-nav" id="nav-home">🏠 Home</a></li>
+            <li><a href="#" data-filter="news" class="nav-link" id="nav-news">📰 News</a></li>
+            <li><a href="#" data-filter="blogs" class="nav-link" id="nav-blogs">📝 Blogs</a></li>
+            <li><a href="#" data-hidden="articles" class="nav-link locked-link" id="nav-articles">📄 Articles 🔒</a></li>
+            <li><a href="#" data-filter="updates" class="nav-link" id="nav-updates">🔔 Updates</a></li>
+            <li><button class="nav-subscribe-btn" id="subscribe-nav-btn">🔔 Subscribe</button></li>
+            <li><a href="#" id="login-link">👤 Login</a></li>
         </ul>
     </nav>
 
@@ -181,9 +184,9 @@
             </div>
 
             <!-- PUBLIC CATEGORIES -->
-            <h3 class="sidebar-heading">Public content</h3>
+            <h3 class="sidebar-heading"> Public content</h3>
             <ul class="sidebar-links">
-                <li><a href="#" data-filter="all"       class="filter-link active-filter" id="link-all">🌐 All Posts</a></li>
+                <li><a href="#" data-filter="all"       class="filter-link active-filter" id="link-all">All Posts</a></li>
                 <li><a href="#" data-filter="sports"    class="filter-link" id="link-sports">🏅 Sports</a></li>
                 <li><a href="#" data-filter="health"    class="filter-link" id="link-health">🏥 Health</a></li>
                 <li><a href="#" data-filter="finance"   class="filter-link" id="link-finance">💰 Finance</a></li>
@@ -191,14 +194,13 @@
                 <li><a href="#" data-filter="religion"  class="filter-link" id="link-religion">🕌 Religion</a></li>
                 <li><a href="#" data-filter="economics" class="filter-link" id="link-economics">📈 Economics</a></li>
                 <li><a href="#" data-filter="news"      class="filter-link" id="link-news">📰 News</a></li>
-                <li><a href="#" data-filter="articles"  class="filter-link" id="link-articles">📄 Articles</a></li>
                 <li><a href="#" data-filter="updates"   class="filter-link" id="link-updates">🔔 Updates</a></li>
             </ul>
 
             <!-- MEMBERS-ONLY SECTIONS -->
-            <h3 class="sidebar-heading">Members Only</h3>
+            <h3 class="sidebar-heading">🔒 Members Only</h3>
             <ul class="sidebar-links">
-               
+                <li><a href="#" data-hidden="articles"  class="hidden-link" id="link-articles">📄 Articles</a></li>
                 <li><a href="#" data-hidden="education" class="hidden-link" id="link-education">📚 Education</a></li>
                 <li><a href="#" data-hidden="love"      class="hidden-link" id="link-love">❤️ Love</a></li>
                 <li><a href="#" data-hidden="stories"   class="hidden-link" id="link-stories">📖 Stories</a></li>
@@ -259,7 +261,7 @@
 
                 <!-- Engagement bar inside modal -->
                 <div class="rm-eng-bar">
-                    <span class="eng-views"><span id="rm-views-count">0</span> views</span>
+                    <span class="eng-views">👁 <span id="rm-views-count">0</span> views</span>
                     <button class="eng-btn like-btn" id="rm-like-btn">👍 <span id="rm-like-count">0</span></button>
                     <button class="eng-btn love-btn" id="rm-love-btn">❤️ <span id="rm-love-count">0</span></button>
                     <span class="eng-comment-label">💬 <span id="rm-comment-count">0</span> comments</span>
@@ -283,6 +285,46 @@
                     </p>
                 </div>
             </div>
+
+                <!-- Post Footer — social + branding -->
+                <div class="post-footer">
+                    <div class="post-footer-inner">
+                        <div class="pf-brand">
+                            <span class="pf-logo"><span class="green">Tech</span><span class="red">Geo</span></span>
+                            <p>East Africa's leading tech blog. Cutting-edge stories from Nairobi and beyond.</p>
+                        </div>
+                        <div class="pf-social">
+                            <span class="pf-follow">Follow us</span>
+                            <div class="pf-social-links">
+                                <a href="https://www.facebook.com/profile.php?id=61551668602567" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                                <a href="https://instagram.com/techg254" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                                <a href="https://wa.me/message/GLEMGMF4KOW4C1" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                                <a href="https://youtube.com/@freelancer_ke1?si=xI40shhYNDqNOCK3" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                                <a href="https://www.tiktok.com/@geotechn?_t=ZM-90oyN5SDDDw&_r=1" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                            </div>
+                        </div>
+                        <div class="pf-links">
+                            <span class="pf-links-title">Quick Links</span>
+                            <ul>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Services</a></li>
+                                <li><a href="#">Contact</a></li>
+                                <li><a href="#">Careers</a></li>
+                            </ul>
+                        </div>
+                        <div class="pf-newsletter">
+                            <span class="pf-links-title">Newsletter</span>
+                            <p>Get the latest stories straight to your inbox.</p>
+                            <div class="pf-subscribe">
+                                <input type="email" placeholder="your@email.com" class="pf-email-input">
+                                <button class="pf-subscribe-btn">Subscribe</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-copyright">
+                        &copy; 2025 TechGeo Solutions. All Rights Reserved.
+                    </div>
+                </div>
         </div>
     </div>
 
@@ -313,7 +355,7 @@
             <!-- Copy link -->
             <div class="share-link-row">
                 <input type="text" id="share-link-input" class="share-link-input" readonly>
-                <button id="copy-link-btn" class="copy-link-btn">Copy</button>
+                <button id="copy-link-btn" class="copy-link-btn"> Copy</button>
             </div>
 
             <!-- Social share buttons -->
@@ -334,7 +376,7 @@
 
             <!-- Lock notice for private posts -->
             <p id="share-private-note" class="share-private-note" style="display:none;">
-                 This is a members-only post. Recipients will need to <strong>login</strong> to view the full content.
+                🔒 This is a members-only post. Recipients will need to <strong>login</strong> to view the full content.
             </p>
         </div>
     </div>
