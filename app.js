@@ -15,7 +15,7 @@ const sectionMeta = {
     economics: { label: 'Economics', public: true  },
     news:      { label: 'News',      public: true  },
     updates:   { label: 'Updates',   public: true  },
-    articles:  { label: 'Articles',  public: true  },
+    articles:  { label: 'Articles',  public: false },
     education: { label: 'Education', public: false },
     love:      { label: 'Love',      public: false },
     stories:   { label: 'Stories',   public: false },
@@ -180,6 +180,8 @@ document.querySelector('#register-form form').addEventListener('submit', async e
 
 /* ═══════════════════════════════════════════════════
    ENGAGEMENT  —  MongoDB via /api/engagement
+   • Bulk-fetched once after posts load (one API call)
+   • Optimistic UI: update instantly, sync DB background
 ═══════════════════════════════════════════════════ */
 const engCache = {};
 
@@ -191,6 +193,24 @@ function getCachedEngagement(postId) {
     return engCache[postId] || { views:0, likes:0, loves:0, comments:[], userLiked:false, userLoved:false, commentCount:0 };
 }
 
+/* Bulk-fetch engagement for all visible posts in one request */
+async function fetchAllEngagement(postIds) {
+    if (!postIds || postIds.length === 0) return;
+    try {
+        const res  = await fetch(API_BASE + '/engagement?postIds=' + postIds.join(','), {
+            headers: { 'Content-Type': 'application/json', ...authHeader() }
+        });
+        const map = await res.json();
+        Object.assign(engCache, map);
+        /* Update all visible cards with real counts */
+        postIds.forEach(id => {
+            const card = document.getElementById(id);
+            if (card && engCache[id]) updateCardEngagement(card, engCache[id]);
+        });
+    } catch (err) { console.warn('Bulk engagement fetch failed:', err.message); }
+}
+
+/* Single fetch (used when opening Read More modal) */
 async function fetchEngagement(postId) {
     try {
         const res  = await fetch(API_BASE + '/engagement?postId=' + postId, {
@@ -203,35 +223,63 @@ async function fetchEngagement(postId) {
 }
 
 async function recordView(postId) {
-    try {
-        const res  = await fetch(API_BASE + '/engagement?action=view', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ postId })
-        });
-        const data = await res.json();
-        if (engCache[postId]) engCache[postId].views = data.views;
-        else engCache[postId] = { ...getCachedEngagement(postId), views: data.views };
-        return data.views;
-    } catch { return (getCachedEngagement(postId).views || 0) + 1; }
+    /* Optimistic: increment locally immediately */
+    if (!engCache[postId]) engCache[postId] = getCachedEngagement(postId);
+    engCache[postId].views = (engCache[postId].views || 0) + 1;
+    const optimisticViews = engCache[postId].views;
+    /* Fire-and-forget to DB */
+    fetch(API_BASE + '/engagement?action=view', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId })
+    }).then(r => r.json()).then(d => {
+        if (engCache[postId]) engCache[postId].views = d.views;
+    }).catch(() => {});
+    return optimisticViews;
 }
 
 async function toggleReaction(postId, type) {
     if (!isLoggedIn()) { openLoginPrompt(); return null; }
-    try {
-        const res = await fetch(API_BASE + '/engagement?action=' + (type === 'likes' ? 'like' : 'love'), {
-            method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() },
-            body: JSON.stringify({ postId })
-        });
-        if (res.status === 401) { openLoginPrompt(); return null; }
-        const data = await res.json();
-        engCache[postId] = data;
-        return data;
-    } catch { return null; }
+
+    /* Optimistic UI — flip state immediately */
+    if (!engCache[postId]) engCache[postId] = getCachedEngagement(postId);
+    const eng    = engCache[postId];
+    const liked  = type === 'likes';
+    const flag   = liked ? 'userLiked' : 'userLoved';
+    const count  = liked ? 'likes'     : 'loves';
+    const wasOn  = eng[flag];
+    eng[flag]  = !wasOn;
+    eng[count] = Math.max(0, (eng[count] || 0) + (wasOn ? -1 : 1));
+
+    /* Sync to DB in background */
+    fetch(API_BASE + '/engagement?action=' + (liked ? 'like' : 'love'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ postId })
+    }).then(r => {
+        if (r.status === 401) { openLoginPrompt(); return; }
+        return r.json();
+    }).then(data => {
+        if (data) { engCache[postId] = data; syncModalEngagement(postId); }
+    }).catch(() => {});
+
+    return eng; /* return optimistic state immediately */
 }
 
 async function addComment(postId, text) {
     if (!isLoggedIn()) { openLoginPrompt(); return null; }
     if (!text.trim()) return null;
+
+    /* Optimistic: add comment locally immediately */
+    if (!engCache[postId]) engCache[postId] = getCachedEngagement(postId);
+    const optimisticComment = {
+        userId: currentUser.id,
+        name:   currentUser.name,
+        text:   text.trim(),
+        time:   new Date().toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' })
+    };
+    engCache[postId].comments = [...(engCache[postId].comments || []), optimisticComment];
+    engCache[postId].commentCount = engCache[postId].comments.length;
+
+    /* Sync to DB */
     try {
         const res = await fetch(API_BASE + '/engagement?action=comment', {
             method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() },
@@ -241,7 +289,7 @@ async function addComment(postId, text) {
         const data = await res.json();
         engCache[postId] = data;
         return data;
-    } catch { return null; }
+    } catch { return engCache[postId]; }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -354,9 +402,6 @@ function buildCard(post) {
         openReadMore(post, true);
     });
 
-    /* Fetch real engagement from DB after card renders */
-    fetchEngagement(post.id).then(eng => updateCardEngagement(card, eng));
-
     return card;
 }
 
@@ -444,8 +489,9 @@ async function openReadMore(post, scrollToComments) {
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    /* Refresh from DB */
+    /* Refresh from DB quietly — don't block the modal opening */
     fetchEngagement(post.id).then(eng => {
+        if (readMoreModal.dataset.postId !== post.id) return; /* modal changed */
         document.getElementById('rm-views-count').textContent   = eng.views;
         document.getElementById('rm-like-count').textContent    = eng.likes;
         document.getElementById('rm-love-count').textContent    = eng.loves;
@@ -579,6 +625,9 @@ function renderPublicFeed(filter, searchQuery) {
     } else {
         posts.forEach(p => blogFeed.appendChild(buildCard(p)));
     }
+
+    /* One bulk request for all visible posts */
+    fetchAllEngagement(posts.map(p => p.id));
 }
 
 /* ═══════════════════════════════════════════════════
@@ -664,6 +713,8 @@ function openHiddenSection(sectionKey) {
     }
     hiddenOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    /* Bulk fetch engagement for all posts in this section */
+    if (posts.length > 0) fetchAllEngagement(posts.map(p => p.id));
 }
 
 closePanel.addEventListener('click', () => { hiddenOverlay.style.display='none'; document.body.style.overflow=''; });
