@@ -6,7 +6,7 @@
 
 const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
-const { connectDB, User } = require('./_db');
+const { connectDB, User } = require('../lib/db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'techgeo_secret';
 
