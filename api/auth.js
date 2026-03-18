@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Unknown action. Use ?action=login or ?action=register' });
 
     } catch (err) {
-        console.error('Auth error:', err);
-        return res.status(500).json({ error: 'Server error' });
+        console.error('Auth error:', err.message, err.stack);
+        return res.status(500).json({ error: err.message || 'Server error' });
     }
 };
