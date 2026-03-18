@@ -7,22 +7,22 @@
    SECTION METADATA
 ═══════════════════════════════════════════════════ */
 const sectionMeta = {
-    sports:    { label: '🏅 Sports',    public: true  },
-    health:    { label: '🏥 Health',    public: true  },
-    finance:   { label: '💰 Finance',   public: true  },
-    politics:  { label: '🏛️ Politics',  public: true  },
-    religion:  { label: '🕌 Religion',  public: true  },
-    economics: { label: '📈 Economics', public: true  },
-    news:      { label: '📰 News',      public: true  },
-    updates:   { label: '🔔 Updates',   public: true  },
-    articles:  { label: '📄 Articles',  public: false },
-    education: { label: '📚 Education', public: false },
-    love:      { label: '❤️ Love',      public: false },
-    stories:   { label: '📖 Stories',   public: false },
-    memes:     { label: '😂 Memes',     public: false },
-    quotes:    { label: '💬 Quotes',    public: false },
-    darkside:  { label: '🌑 Dark Side', public: false },
-    crime:     { label: '🚔 Crime',     public: false },
+    sports:    { label: 'Sports',    public: true  },
+    health:    { label: 'Health',    public: true  },
+    finance:   { label: 'Finance',   public: true  },
+    politics:  { label: 'Politics',  public: true  },
+    religion:  { label: 'Religion',  public: true  },
+    economics: { label: 'Economics', public: true  },
+    news:      { label: 'News',      public: true  },
+    updates:   { label: 'Updates',   public: true  },
+    articles:  { label: 'Articles',  public: true  },
+    education: { label: 'Education', public: false },
+    love:      { label: 'Love',      public: false },
+    stories:   { label: 'Stories',   public: false },
+    memes:     { label: 'Memes',     public: false },
+    quotes:    { label: 'Quotes',    public: false },
+    darkside:  { label: 'Dark Side', public: false },
+    crime:     { label: 'Crime',     public: false },
 };
 
 /* ═══════════════════════════════════════════════════
@@ -198,7 +198,7 @@ document.querySelector('#login-form form').addEventListener('submit', e => {
     setTimeout(() => {
         const ok = attemptLogin(email, password);
         if (!ok) {
-            showToast('❌ Incorrect email or password.', 'error');
+            showToast('Incorrect email or password.', 'error');
             document.getElementById('login-password').value = '';
         }
         btn.textContent = 'Login'; btn.disabled = false;
@@ -318,7 +318,7 @@ function buildEngagementBar(post) {
             '<button class="eng-btn love-btn' + (loved ? ' reacted' : '') + '" title="' + loginHint + 'Love">' +
                 '❤️ <span class="love-count">' + eng.loves + '</span></button>' +
             '<button class="eng-btn comment-trigger">💬 <span class="comment-count">' + eng.comments.length + '</span></button>' +
-            '<button class="eng-btn share-btn">📤 Share</button>' +
+            '<button class="eng-btn share-btn">Share</button>' +
         '</div>'
     );
 }
@@ -348,7 +348,7 @@ function buildCard(post) {
         : '';
 
     const preview   = post.content.length > 140 ? post.content.slice(0, 140) + '…' : post.content;
-    const dateBadge = post.date ? '<span class="post-date">📅 ' + post.date + '</span>' : '';
+    const dateBadge = post.date ? '<span class="post-date">' + post.date + '</span>' : '';
 
     const card = document.createElement('article');
     card.className        = 'post-card';
@@ -476,7 +476,7 @@ function openReadMore(post, scrollToComments = false) {
     document.getElementById('rm-badge').textContent    = getLabel(post.section);
     document.getElementById('rm-title').textContent    = post.title;
     const rmDate = document.getElementById('rm-date');
-    if (rmDate) rmDate.textContent = post.date ? '📅 ' + post.date : '';
+    if (rmDate) rmDate.textContent = post.date ? ' ' + post.date : '';
     document.getElementById('rm-media-wrap').innerHTML = mediaHTML;
     document.getElementById('rm-caption').textContent  = post.caption;
     document.getElementById('rm-content').textContent  = post.content;
@@ -544,7 +544,7 @@ document.getElementById('rm-comment-submit').addEventListener('click', () => {
     if (comment) {
         input.value = '';
         syncModalEngagement(postId);
-        showToast('💬 Comment posted!', 'success');
+        showToast(' Comment posted!', 'success');
     }
 });
 
@@ -861,7 +861,7 @@ function handleDeepLink() {
     if (post.visibility === 'members' && !isLoggedIn()) {
         setTimeout(() => {
             openLoginPrompt();
-            showToast('🔒 Login to view this members-only post.', 'info');
+            showToast('Login to view this members-only post.', 'info');
         }, 400);
         return;
     }
