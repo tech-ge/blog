@@ -123,6 +123,12 @@ function updateNavForGuest() {
 }
 
 /* ── Toast notification ── */
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function showToast(message, type = 'info') {
     const existing = document.getElementById('toast-msg');
     if (existing) existing.remove();
@@ -206,81 +212,78 @@ document.querySelector('#register-form form').addEventListener('submit', async e
 });
 
 /* ═══════════════════════════════════════════════════
-   ENGAGEMENT STORE
-   Stored in sessionStorage — persists on refresh,
-   clears when the browser tab is closed.
+   ENGAGEMENT  —  ALL DATA SAVED IN MONGODB
+   api/engagement.js handles views, likes, loves, comments
 ═══════════════════════════════════════════════════ */
-const ENG_KEY = 'techgeo_engagement';
 
-function loadEngagement() {
-    try { return JSON.parse(sessionStorage.getItem(ENG_KEY)) || {}; }
-    catch { return {}; }
+/* In-memory cache so we don't refetch on every render */
+const engCache = {};
+
+function authHeader() {
+    return currentToken ? { 'Authorization': 'Bearer ' + currentToken } : {};
 }
 
-function saveEngagement(store) {
-    sessionStorage.setItem(ENG_KEY, JSON.stringify(store));
-}
-
-function getPostEngagement(postId) {
-    const store = loadEngagement();
-    if (!store[postId])
-        store[postId] = { views: 0, likes: 0, loves: 0, comments: [], likedBy: [], lovedBy: [] };
-    saveEngagement(store);
-    return store[postId];
-}
-
-function recordView(postId) {
-    const store = loadEngagement();
-    if (!store[postId])
-        store[postId] = { views: 0, likes: 0, loves: 0, comments: [], likedBy: [], lovedBy: [] };
-    store[postId].views = (store[postId].views || 0) + 1;
-    saveEngagement(store);
-    return store[postId].views;
-}
-
-function toggleReaction(postId, type) {
-    if (!isLoggedIn()) { openLoginPrompt(); return null; }
-    const store = loadEngagement();
-    if (!store[postId])
-        store[postId] = { views: 0, likes: 0, loves: 0, comments: [], likedBy: [], lovedBy: [] };
-    const eng   = store[postId];
-    const byKey = type === 'likes' ? 'likedBy' : 'lovedBy';
-    if (!eng[byKey]) eng[byKey] = [];
-    const idx = eng[byKey].indexOf(currentUser.id);
-    if (idx === -1) {
-        eng[byKey].push(currentUser.id);
-        eng[type] = (eng[type] || 0) + 1;
-    } else {
-        eng[byKey].splice(idx, 1);
-        eng[type] = Math.max(0, (eng[type] || 1) - 1);
+async function fetchEngagement(postId) {
+    try {
+        const res  = await fetch(API_BASE + '/engagement?postId=' + postId, {
+            headers: { 'Content-Type': 'application/json', ...authHeader() }
+        });
+        const data = await res.json();
+        engCache[postId] = data;
+        return data;
+    } catch {
+        /* fallback empty state if API unreachable */
+        return engCache[postId] || { views: 0, likes: 0, loves: 0, comments: [], userLiked: false, userLoved: false, commentCount: 0 };
     }
-    saveEngagement(store);
-    return eng;
 }
 
-function addComment(postId, text) {
+function getCachedEngagement(postId) {
+    return engCache[postId] || { views: 0, likes: 0, loves: 0, comments: [], userLiked: false, userLoved: false, commentCount: 0 };
+}
+
+async function recordView(postId) {
+    try {
+        const res  = await fetch(API_BASE + '/engagement?action=view', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ postId })
+        });
+        const data = await res.json();
+        if (engCache[postId]) engCache[postId].views = data.views;
+        else engCache[postId] = { ...getCachedEngagement(postId), views: data.views };
+        return data.views;
+    } catch { return (getCachedEngagement(postId).views || 0) + 1; }
+}
+
+async function toggleReaction(postId, type) {
+    if (!isLoggedIn()) { openLoginPrompt(); return null; }
+    try {
+        const res  = await fetch(API_BASE + '/engagement?action=' + (type === 'likes' ? 'like' : 'love'), {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body:    JSON.stringify({ postId })
+        });
+        if (res.status === 401) { openLoginPrompt(); return null; }
+        const data = await res.json();
+        engCache[postId] = data;
+        return data;
+    } catch { return null; }
+}
+
+async function addComment(postId, text) {
     if (!isLoggedIn()) { openLoginPrompt(); return null; }
     if (!text.trim()) return null;
-    const store = loadEngagement();
-    if (!store[postId])
-        store[postId] = { views: 0, likes: 0, loves: 0, comments: [], likedBy: [], lovedBy: [] };
-    const comment = {
-        id:     Date.now(),
-        userId: currentUser.id,
-        name:   currentUser.name,
-        text:   text.trim(),
-        time:   new Date().toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' })
-    };
-    store[postId].comments.push(comment);
-    saveEngagement(store);
-    return comment;
-}
-
-function userReacted(postId, type) {
-    if (!isLoggedIn()) return false;
-    const eng   = getPostEngagement(postId);
-    const byKey = type === 'likes' ? 'likedBy' : 'lovedBy';
-    return (eng[byKey] || []).includes(currentUser.id);
+    try {
+        const res  = await fetch(API_BASE + '/engagement?action=comment', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body:    JSON.stringify({ postId, text: text.trim() })
+        });
+        if (res.status === 401) { openLoginPrompt(); return null; }
+        const data = await res.json();
+        engCache[postId] = data;
+        return data;
+    } catch { return null; }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -291,9 +294,9 @@ function getLabel(section) {
 }
 
 function buildEngagementBar(post) {
-    const eng   = getPostEngagement(post.id);
-    const liked = userReacted(post.id, 'likes');
-    const loved = userReacted(post.id, 'loves');
+    const eng   = getCachedEngagement(post.id);
+    const liked = eng.userLiked;
+    const loved = eng.userLoved;
     const loginHint = isLoggedIn() ? '' : 'Login to ';
     return (
         '<div class="eng-bar" data-post="' + post.id + '">' +
@@ -302,7 +305,7 @@ function buildEngagementBar(post) {
                 '👍 <span class="like-count">' + eng.likes + '</span></button>' +
             '<button class="eng-btn love-btn' + (loved ? ' reacted' : '') + '" title="' + loginHint + 'Love">' +
                 '❤️ <span class="love-count">' + eng.loves + '</span></button>' +
-            '<button class="eng-btn comment-trigger">💬 <span class="comment-count">' + eng.comments.length + '</span></button>' +
+            '<button class="eng-btn comment-trigger">💬 <span class="comment-count">' + eng.commentCount + '</span></button>' +
             '<button class="eng-btn share-btn">Share</button>' +
         '</div>'
     );
@@ -333,7 +336,7 @@ function buildCard(post) {
         : '';
 
     const preview   = post.content.length > 140 ? post.content.slice(0, 140) + '…' : post.content;
-    const dateBadge = post.date ? '<span class="post-date">' + post.date + '</span>' : '';
+    const dateBadge = post.date ? '<span class="post-date"> ' + post.date + '</span>' : '';
 
     const card = document.createElement('article');
     card.className        = 'post-card';
@@ -363,27 +366,27 @@ function buildCard(post) {
         CARD_FOOTER;
 
     /* ── Wire events ── */
-    card.querySelector('.read-more-btn').addEventListener('click', () => {
-        const v = recordView(post.id);
+    card.querySelector('.read-more-btn').addEventListener('click', async () => {
+        const v = await recordView(post.id);
         const vc = card.querySelector('.eng-views-count');
         if (vc) vc.textContent = v;
         openReadMore(post);
     });
 
-    card.querySelector('.like-btn').addEventListener('click', e => {
-        const eng = toggleReaction(post.id, 'likes');
+    card.querySelector('.like-btn').addEventListener('click', async e => {
+        const eng = await toggleReaction(post.id, 'likes');
         if (!eng) return;
         const btn = e.currentTarget;
-        btn.classList.toggle('reacted', eng.likedBy.includes(currentUser.id));
+        btn.classList.toggle('reacted', eng.userLiked);
         btn.querySelector('.like-count').textContent = eng.likes;
         syncModalEngagement(post.id);
     });
 
-    card.querySelector('.love-btn').addEventListener('click', e => {
-        const eng = toggleReaction(post.id, 'loves');
+    card.querySelector('.love-btn').addEventListener('click', async e => {
+        const eng = await toggleReaction(post.id, 'loves');
         if (!eng) return;
         const btn = e.currentTarget;
-        btn.classList.toggle('reacted', eng.lovedBy.includes(currentUser.id));
+        btn.classList.toggle('reacted', eng.userLoved);
         btn.querySelector('.love-count').textContent = eng.loves;
         syncModalEngagement(post.id);
     });
@@ -393,54 +396,63 @@ function buildCard(post) {
         openShareModal(post);
     });
 
-    card.querySelector('.comment-trigger').addEventListener('click', () => {
-        const v = recordView(post.id);
+    card.querySelector('.comment-trigger').addEventListener('click', async () => {
+        const v = await recordView(post.id);
         const vc = card.querySelector('.eng-views-count');
         if (vc) vc.textContent = v;
         openReadMore(post, true);
     });
 
+    /* fetch & render real engagement from DB after card is built */
+    fetchEngagement(post.id).then(eng => updateCardEngagement(card, eng));
+
     return card;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD  —  UPDATE ENGAGEMENT COUNTS AFTER DB FETCH
+═══════════════════════════════════════════════════ */
+function updateCardEngagement(card, eng) {
+    if (!card || !eng) return;
+    const vc = card.querySelector('.eng-views-count');  if (vc) vc.textContent = eng.views;
+    const lc = card.querySelector('.like-count');        if (lc) lc.textContent = eng.likes;
+    const oc = card.querySelector('.love-count');        if (oc) oc.textContent = eng.loves;
+    const cc = card.querySelector('.comment-count');     if (cc) cc.textContent = eng.commentCount;
+    const lb = card.querySelector('.like-btn');          if (lb) lb.classList.toggle('reacted', eng.userLiked);
+    const vb = card.querySelector('.love-btn');          if (vb) vb.classList.toggle('reacted', eng.userLoved);
 }
 
 /* ═══════════════════════════════════════════════════
    MODAL  —  ENGAGEMENT SYNC
 ═══════════════════════════════════════════════════ */
-function syncModalEngagement(postId) {
-    const eng = getPostEngagement(postId);
+async function syncModalEngagement(postId) {
+    const eng = await fetchEngagement(postId);
     const get = id => document.getElementById(id);
     const lc = get('rm-like-count');    if (lc) lc.textContent = eng.likes;
     const vc = get('rm-love-count');    if (vc) vc.textContent = eng.loves;
-    const cc = get('rm-comment-count'); if (cc) cc.textContent = eng.comments.length;
-    const lb = get('rm-like-btn');      if (lb) lb.classList.toggle('reacted', userReacted(postId, 'likes'));
-    const vb = get('rm-love-btn');      if (vb) vb.classList.toggle('reacted', userReacted(postId, 'loves'));
-    renderModalComments(postId);
+    const cc = get('rm-comment-count'); if (cc) cc.textContent = eng.commentCount;
+    const lb = get('rm-like-btn');      if (lb) lb.classList.toggle('reacted', eng.userLiked);
+    const vb = get('rm-love-btn');      if (vb) vb.classList.toggle('reacted', eng.userLoved);
+    renderModalComments(eng.comments || []);
     /* also sync the card on the feed */
     const card = document.getElementById(postId);
-    if (card) {
-        const clc = card.querySelector('.like-count');    if (clc) clc.textContent = eng.likes;
-        const cvc = card.querySelector('.love-count');    if (cvc) cvc.textContent = eng.loves;
-        const ccc = card.querySelector('.comment-count'); if (ccc) ccc.textContent = eng.comments.length;
-        const clb = card.querySelector('.like-btn');      if (clb) clb.classList.toggle('reacted', userReacted(postId, 'likes'));
-        const cvb = card.querySelector('.love-btn');      if (cvb) cvb.classList.toggle('reacted', userReacted(postId, 'loves'));
-    }
+    if (card) updateCardEngagement(card, eng);
 }
 
-function renderModalComments(postId) {
-    const eng  = getPostEngagement(postId);
+function renderModalComments(comments) {
     const list = document.getElementById('rm-comments-list');
     if (!list) return;
-    if (eng.comments.length === 0) {
+    if (!comments || comments.length === 0) {
         list.innerHTML = '<p class="no-comments">No comments yet. Be the first!</p>';
         return;
     }
-    list.innerHTML = eng.comments.map(c =>
+    list.innerHTML = comments.map(c =>
         '<div class="comment-item">' +
             '<div class="comment-meta">' +
-                '<span class="comment-author">' + c.name + '</span>' +
+                '<span class="comment-author">' + escHtml(c.name) + '</span>' +
                 '<span class="comment-time">' + c.time + '</span>' +
             '</div>' +
-            '<p class="comment-text">' + c.text + '</p>' +
+            '<p class="comment-text">' + escHtml(c.text) + '</p>' +
         '</div>'
     ).join('');
 }
@@ -448,35 +460,35 @@ function renderModalComments(postId) {
 /* ═══════════════════════════════════════════════════
    MODAL  —  OPEN READ MORE
 ═══════════════════════════════════════════════════ */
-function openReadMore(post, scrollToComments = false) {
+async function openReadMore(post, scrollToComments = false) {
     const mediaHTML = post.mediaType === 'video'
         ? '<div class="rm-media"><iframe src="' + post.media + '" frameborder="0" allowfullscreen></iframe></div>'
         : post.mediaType === 'image'
         ? '<div class="rm-media"><img src="' + post.media + '" alt="' + post.caption + '"></div>'
         : '';
 
-    const eng   = getPostEngagement(post.id);
     const modal = document.getElementById('read-more-modal');
 
     document.getElementById('rm-badge').textContent    = getLabel(post.section);
     document.getElementById('rm-title').textContent    = post.title;
     const rmDate = document.getElementById('rm-date');
-    if (rmDate) rmDate.textContent = post.date ? ' ' + post.date : '';
+    if (rmDate) rmDate.textContent = post.date ? '' + post.date : '';
     document.getElementById('rm-media-wrap').innerHTML = mediaHTML;
     document.getElementById('rm-caption').textContent  = post.caption;
     document.getElementById('rm-content').textContent  = post.content;
 
-    document.getElementById('rm-views-count').textContent   = eng.views;
-    document.getElementById('rm-like-count').textContent    = eng.likes;
-    document.getElementById('rm-love-count').textContent    = eng.loves;
-    document.getElementById('rm-comment-count').textContent = eng.comments.length;
-    document.getElementById('rm-like-btn').classList.toggle('reacted', userReacted(post.id, 'likes'));
-    document.getElementById('rm-love-btn').classList.toggle('reacted', userReacted(post.id, 'loves'));
+    /* show cached values immediately, then update from DB */
+    const cached = getCachedEngagement(post.id);
+    document.getElementById('rm-views-count').textContent   = cached.views;
+    document.getElementById('rm-like-count').textContent    = cached.likes;
+    document.getElementById('rm-love-count').textContent    = cached.loves;
+    document.getElementById('rm-comment-count').textContent = cached.commentCount;
+    document.getElementById('rm-like-btn').classList.toggle('reacted', cached.userLiked);
+    document.getElementById('rm-love-btn').classList.toggle('reacted', cached.userLoved);
+    renderModalComments(cached.comments || []);
 
     modal.dataset.postId         = post.id;
     modal.dataset.postVisibility = post.visibility || 'public';
-
-    renderModalComments(post.id);
 
     const ci = document.getElementById('rm-comment-input-wrap');
     if (ci) ci.style.display = isLoggedIn() ? 'flex' : 'none';
@@ -485,6 +497,17 @@ function openReadMore(post, scrollToComments = false) {
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    /* fetch fresh data from DB */
+    fetchEngagement(post.id).then(eng => {
+        document.getElementById('rm-views-count').textContent   = eng.views;
+        document.getElementById('rm-like-count').textContent    = eng.likes;
+        document.getElementById('rm-love-count').textContent    = eng.loves;
+        document.getElementById('rm-comment-count').textContent = eng.commentCount;
+        document.getElementById('rm-like-btn').classList.toggle('reacted', eng.userLiked);
+        document.getElementById('rm-love-btn').classList.toggle('reacted', eng.userLoved);
+        renderModalComments(eng.comments || []);
+    });
 
     if (scrollToComments) {
         setTimeout(() => {
@@ -511,22 +534,22 @@ readMoreModal.addEventListener('click', e => {
     }
 });
 
-document.getElementById('rm-like-btn').addEventListener('click', () => {
+document.getElementById('rm-like-btn').addEventListener('click', async () => {
     const postId = readMoreModal.dataset.postId; if (!postId) return;
-    const eng = toggleReaction(postId, 'likes'); if (eng) syncModalEngagement(postId);
+    const eng = await toggleReaction(postId, 'likes'); if (eng) syncModalEngagement(postId);
 });
 
-document.getElementById('rm-love-btn').addEventListener('click', () => {
+document.getElementById('rm-love-btn').addEventListener('click', async () => {
     const postId = readMoreModal.dataset.postId; if (!postId) return;
-    const eng = toggleReaction(postId, 'loves'); if (eng) syncModalEngagement(postId);
+    const eng = await toggleReaction(postId, 'loves'); if (eng) syncModalEngagement(postId);
 });
 
-document.getElementById('rm-comment-submit').addEventListener('click', () => {
+document.getElementById('rm-comment-submit').addEventListener('click', async () => {
     const postId = readMoreModal.dataset.postId;
     const input  = document.getElementById('rm-comment-box');
-    if (!postId || !input) return;
-    const comment = addComment(postId, input.value);
-    if (comment) {
+    if (!postId || !input || !input.value.trim()) return;
+    const result = await addComment(postId, input.value);
+    if (result) {
         input.value = '';
         syncModalEngagement(postId);
         showToast('💬 Comment posted!', 'success');
@@ -721,33 +744,11 @@ promptLoginBtn.addEventListener('click', () => {
 });
 
 /* ═══════════════════════════════════════════════════
-   SUBSCRIBE
+   SUBSCRIBE  —  SAVED IN MONGODB
 ═══════════════════════════════════════════════════ */
-const SUBS_KEY = 'techgeo_subscribers';
-
-function loadSubscribers() {
-    try { return JSON.parse(sessionStorage.getItem(SUBS_KEY)) || []; } catch { return []; }
-}
-
-function saveSubscriber(name, email) {
-    const subs = loadSubscribers();
-    if (subs.find(s => s.email.toLowerCase() === email.toLowerCase())) {
-        showToast('📧 You are already subscribed!', 'info'); return false;
-    }
-    subs.push({ name, email, date: new Date().toLocaleDateString('en-KE') });
-    sessionStorage.setItem(SUBS_KEY, JSON.stringify(subs));
-    return true;
-}
-
-function updateSubCount() {
-    const el = document.getElementById('sub-count');
-    if (el) el.textContent = loadSubscribers().length;
-}
-
 function openSubscribeModal() {
     document.getElementById('subscribe-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    updateSubCount();
 }
 
 document.getElementById('subscribe-nav-btn').addEventListener('click', openSubscribeModal);
@@ -764,24 +765,35 @@ document.getElementById('subscribe-modal').addEventListener('click', e => {
     }
 });
 
-document.getElementById('subscribe-form').addEventListener('submit', e => {
+document.getElementById('subscribe-form').addEventListener('submit', async e => {
     e.preventDefault();
     const name  = document.getElementById('sub-name').value.trim();
     const email = document.getElementById('sub-email').value.trim();
     const btn   = document.getElementById('sub-btn');
     if (!name || !email) { showToast('⚠️ Please fill in your name and email.', 'error'); return; }
     btn.textContent = 'Subscribing...'; btn.disabled = true;
-    setTimeout(() => {
-        if (saveSubscriber(name, email)) {
+    try {
+        const res  = await fetch(API_BASE + '/subscribers', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ name, email })
+        });
+        const data = await res.json();
+        if (res.status === 409) {
+            showToast('📧 You are already subscribed!', 'info');
+        } else if (!res.ok) {
+            throw new Error(data.error || 'Subscription failed');
+        } else {
             showToast('🎉 Welcome, ' + name.split(' ')[0] + '! You are now subscribed.', 'success');
             document.getElementById('subscribe-modal').style.display = 'none';
             document.body.style.overflow = '';
             document.getElementById('sub-name').value  = '';
             document.getElementById('sub-email').value = '';
         }
-        btn.textContent = 'Subscribe Now'; btn.disabled = false;
-        updateSubCount();
-    }, 600);
+    } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+    }
+    btn.textContent = 'Subscribe Now'; btn.disabled = false;
 });
 
 /* ═══════════════════════════════════════════════════
@@ -828,7 +840,7 @@ document.getElementById('copy-link-btn').addEventListener('click', () => {
         navigator.clipboard.writeText(input.value).then(() => showToast('🔗 Link copied!', 'success'));
     } else {
         document.execCommand('copy');
-        showToast(' Link copied!', 'success');
+        showToast('🔗 Link copied!', 'success');
     }
 });
 
@@ -846,7 +858,7 @@ function handleDeepLink() {
     if (post.visibility === 'members' && !isLoggedIn()) {
         setTimeout(() => {
             openLoginPrompt();
-            showToast('Login to view this members-only post.', 'info');
+            showToast('🔒 Login to view this members-only post.', 'info');
         }, 400);
         return;
     }
